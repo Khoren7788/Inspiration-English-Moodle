@@ -19,6 +19,7 @@ services:
     volumes:
       - moodle_code:/var/www/html:ro
       - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+      - ./custom/theme/inspiration:/var/www/html/public/theme/inspiration:ro
     networks:
       - frontend
       - backend
@@ -45,6 +46,7 @@ services:
     volumes:
       - moodle_code:/var/www/html
       - moodledata:/var/moodledata
+      - ./custom/theme/inspiration:/var/www/html/public/theme/inspiration
     environment:
       - MOODLE_VERSION=${MOODLE_VERSION:-5.1.2}
       - MOODLE_URL=${MOODLE_URL:-http://localhost}
@@ -91,6 +93,7 @@ services:
     volumes:
       - moodle_code:/var/www/html:ro
       - moodledata:/var/moodledata
+      - ./custom/theme/inspiration:/var/www/html/public/theme/inspiration:ro
     environment:
       - MOODLE_SKIP_BOOTSTRAP=true
       - DB_TYPE=${DB_TYPE:-mariadb}
