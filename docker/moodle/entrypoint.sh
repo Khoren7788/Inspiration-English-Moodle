@@ -208,6 +208,12 @@ EOFCONFIG
 fix_permissions() {
     log "Fixing permissions..."
 
+    # localcachedir is configured outside moodledata. It may have been
+    # created by a root-run CLI command in an earlier container session.
+    mkdir -p /tmp/moodle_cache
+    chown -R www-data:www-data /tmp/moodle_cache
+    chmod -R 0775 /tmp/moodle_cache
+
     # Ensure moodledata is writable
     if [ -d /var/moodledata ]; then
         chown -R www-data:www-data /var/moodledata 2>/dev/null || true
