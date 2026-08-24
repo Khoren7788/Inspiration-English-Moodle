@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/livecourse/db" VERSION="2026082500" COMMENT="XMLDB file for Live course">
+  <TABLES>
+    <TABLE NAME="livecourse" COMMENT="Live course activity instances">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="course" TYPE="foreign" FIELDS="course" REFTABLE="course" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="livecourse_question" COMMENT="Questions owned by a live course">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="livecourseid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="questiontext" TYPE="text" NOTNULL="true"/>
+        <FIELD NAME="optiona" TYPE="text" NOTNULL="true"/>
+        <FIELD NAME="optionb" TYPE="text" NOTNULL="true"/>
+        <FIELD NAME="optionc" TYPE="text" NOTNULL="true"/>
+        <FIELD NAME="optiond" TYPE="text" NOTNULL="true"/>
+        <FIELD NAME="correctoption" TYPE="char" LENGTH="1" NOTNULL="true"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="livecourse" TYPE="foreign" FIELDS="livecourseid" REFTABLE="livecourse" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="livecourse-sort" UNIQUE="false" FIELDS="livecourseid, sortorder"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="livecourse_session" COMMENT="Teacher-led live sessions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="livecourseid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="currentquestionid" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="startedby" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="timestarted" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timeended" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="livecourse" TYPE="foreign" FIELDS="livecourseid" REFTABLE="livecourse" REFFIELDS="id"/>
+        <KEY NAME="question" TYPE="foreign" FIELDS="currentquestionid" REFTABLE="livecourse_question" REFFIELDS="id"/>
+        <KEY NAME="user" TYPE="foreign" FIELDS="startedby" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="livecourse-status" UNIQUE="false" FIELDS="livecourseid, status"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="livecourse_response" COMMENT="Student responses during live sessions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="answer" TYPE="char" LENGTH="1" NOTNULL="true"/>
+        <FIELD NAME="iscorrect" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timeanswered" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="session" TYPE="foreign" FIELDS="sessionid" REFTABLE="livecourse_session" REFFIELDS="id"/>
+        <KEY NAME="question" TYPE="foreign" FIELDS="questionid" REFTABLE="livecourse_question" REFFIELDS="id"/>
+        <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="session-question-user" UNIQUE="true" FIELDS="sessionid, questionid, userid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
+

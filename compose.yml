@@ -20,6 +20,7 @@ services:
       - moodle_code:/var/www/html:ro
       - ./docker/nginx/ssl:/etc/nginx/ssl:ro
       - ./custom/theme/inspiration:/var/www/html/public/theme/inspiration:ro
+      - ./custom/mod/livecourse:/var/www/html/public/mod/livecourse:ro
     networks:
       - frontend
       - backend
@@ -47,6 +48,7 @@ services:
       - moodle_code:/var/www/html
       - moodledata:/var/moodledata
       - ./custom/theme/inspiration:/var/www/html/public/theme/inspiration
+      - ./custom/mod/livecourse:/var/www/html/public/mod/livecourse
     environment:
       - MOODLE_VERSION=${MOODLE_VERSION:-5.1.2}
       - MOODLE_URL=${MOODLE_URL:-http://localhost}
@@ -94,6 +96,7 @@ services:
       - moodle_code:/var/www/html:ro
       - moodledata:/var/moodledata
       - ./custom/theme/inspiration:/var/www/html/public/theme/inspiration:ro
+      - ./custom/mod/livecourse:/var/www/html/public/mod/livecourse:ro
     environment:
       - MOODLE_SKIP_BOOTSTRAP=true
       - DB_TYPE=${DB_TYPE:-mariadb}

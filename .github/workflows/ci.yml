@@ -33,6 +33,11 @@ jobs:
           docker run --rm -v "$PWD:/mnt" koalaman/shellcheck-alpine:stable \
             sh -c 'find /mnt/docker /mnt/scripts -type f -name "*.sh" -print0 | xargs -0 shellcheck'
 
+      - name: Lint custom Moodle PHP
+        run: |
+          docker run --rm -v "$PWD:/workspace:ro" php:8.4-cli-alpine \
+            sh -c 'find /workspace/custom -type f -name "*.php" -print0 | xargs -0 -n1 php -l'
+
       - name: Lint Dockerfiles
         run: |
           docker run --rm -i hadolint/hadolint:v2.14.0-alpine hadolint --failure-threshold error --ignore DL3018 - < docker/moodle/Dockerfile
