@@ -44,7 +44,9 @@ jobs:
 
       - name: Verify .gitignore excludes secrets
         run: |
-          if grep -q "^\.env$" .gitignore && grep -q "docker/nginx/ssl/\*\.pem$" .gitignore; then
+          if grep -q "^\.env$" .gitignore && \
+             grep -q "^docker/nginx/ssl/$" .gitignore && \
+             grep -q "^\*\.pem$" .gitignore; then
             echo ".gitignore properly configured"
           else
             echo ".gitignore missing critical entries"
