@@ -3,8 +3,8 @@
 
 FROM php:8.4-fpm-alpine
 
-LABEL maintainer="Netresearch DTT GmbH"
-LABEL org.opencontainers.image.source="https://github.com/netresearch/moodle-docker"
+LABEL maintainer="Khoren7788"
+LABEL org.opencontainers.image.source="https://github.com/Khoren7788/Inspiration-English-Moodle"
 LABEL description="Moodle 5.x PHP-FPM runtime"
 
 # Build dependencies (removed after compile)

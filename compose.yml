@@ -6,7 +6,7 @@ services:
   # nginx - Web Server
   # ==========================================================================
   nginx:
-    image: netresearch/moodle-nginx:latest
+    image: ${NGINX_IMAGE:-ghcr.io/khoren7788/inspiration-english-moodle/moodle-nginx:latest}
     build:
       context: ./docker/nginx
       dockerfile: Dockerfile
@@ -37,7 +37,7 @@ services:
   # Moodle - PHP-FPM Application
   # ==========================================================================
   moodle:
-    image: netresearch/moodle:${MOODLE_VERSION:-5.1}
+    image: ${MOODLE_IMAGE:-ghcr.io/khoren7788/inspiration-english-moodle/moodle:latest}
     build:
       context: ./docker/moodle
       dockerfile: Dockerfile
@@ -83,7 +83,7 @@ services:
   # Moodle Cron - Dedicated Container for Scheduled Tasks
   # ==========================================================================
   moodle-cron:
-    image: netresearch/moodle:${MOODLE_VERSION:-5.1}
+    image: ${MOODLE_IMAGE:-ghcr.io/khoren7788/inspiration-english-moodle/moodle:latest}
     build:
       context: ./docker/moodle
       dockerfile: Dockerfile

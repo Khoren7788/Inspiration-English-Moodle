@@ -1,6 +1,6 @@
 # Moodle 5.1 Docker Stack
 
-[![Docker Build](https://github.com/netresearch/moodle-docker/actions/workflows/docker-build.yml/badge.svg)](https://github.com/netresearch/moodle-docker/actions/workflows/docker-build.yml)
+[![Docker Build](https://github.com/Khoren7788/Inspiration-English-Moodle/actions/workflows/docker-build.yml/badge.svg)](https://github.com/Khoren7788/Inspiration-English-Moodle/actions/workflows/docker-build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Moodle](https://img.shields.io/badge/Moodle-5.1-orange.svg)](https://moodle.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.4-blue.svg)](https://www.php.net/)
@@ -81,8 +81,8 @@ Production-ready Docker Compose stack for Moodle 5.1 LMS with PHP 8.4 (PHP-FPM),
 ### 1. Clone this Repository
 
 ```bash
-git clone https://github.com/netresearch/moodle-docker.git
-cd moodle-docker
+git clone https://github.com/Khoren7788/Inspiration-English-Moodle.git
+cd Inspiration-English-Moodle
 ```
 
 ### 2. Configure Environment

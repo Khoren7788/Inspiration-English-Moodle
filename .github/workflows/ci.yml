@@ -1,13 +1,3 @@
-# Adopts the org "Docker Image CI" gold-standard meta for the LINT +
-# SECURITY surface (hadolint, shellcheck, yamllint, compose config-check,
-# a validation-only Trivy build of the primary Moodle image, secret
-# scanning and dependency review).
-#
-# The bespoke two-image build (build-moodle-image + build-nginx-image) and
-# the Test Stack Startup live in docker-build.yml and are intentionally NOT
-# subsumed here: build-container validates ONE image/Dockerfile, so this
-# call points it at the primary Moodle Dockerfile. The nginx Dockerfile and
-# the full stack integration test remain covered by docker-build.yml.
 name: CI
 
 on:
@@ -15,26 +5,35 @@ on:
     branches: [main]
   pull_request:
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
-  lint-security:
-    name: Lint & Security
-    uses: netresearch/.github/.github/workflows/docker-image-ci.yml@main
-    permissions:
-      contents: read
-      packages: write
-      security-events: write
-      id-token: write
-      attestations: write
-      actions: read
-      pull-requests: write
-    with:
-      image-name: moodle
-      dockerfile: ./docker/moodle/Dockerfile
-      context: ./docker/moodle
-      lint-container: true
-      shell-scandirs: "docker scripts"
-      lint-yaml: true
-      lint-compose: true
-      compose-files: "compose.yml"
+  validate:
+    name: Validate configuration and scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Prepare validation environment
+        run: |
+          cp .env.example .env
+          sed -i 's/CHANGE_ME_SECURE_PASSWORD/test_password_123/g' .env
+          sed -i 's/CHANGE_ME_SECURE_ROOT_PASSWORD/test_root_456/g' .env
+          sed -i 's/CHANGE_ME_SECURE_VALKEY_PASSWORD/test_valkey_789/g' .env
+
+      - name: Validate Docker Compose files
+        run: |
+          docker compose -f compose.yml config --quiet
+          docker compose -f compose.yml -f compose.traefik.yml config --quiet
+
+      - name: Lint shell scripts
+        run: |
+          docker run --rm -v "$PWD:/mnt" koalaman/shellcheck-alpine:stable \
+            sh -c 'find /mnt/docker /mnt/scripts -type f -name "*.sh" -print0 | xargs -0 shellcheck'
+
+      - name: Lint Dockerfiles
+        run: |
+          docker run --rm -i hadolint/hadolint:v2.14.0-alpine < docker/moodle/Dockerfile
+          docker run --rm -i hadolint/hadolint:v2.14.0-alpine < docker/nginx/Dockerfile

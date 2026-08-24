@@ -40,8 +40,8 @@ RUN NGINX_VERSION=$(nginx -v 2>&1 | sed 's/.*nginx\///' ) && \
 # =============================================================================
 FROM nginx:1.31-alpine
 
-LABEL maintainer="Netresearch DTT GmbH"
-LABEL org.opencontainers.image.source="https://github.com/netresearch/moodle-docker"
+LABEL maintainer="Khoren7788"
+LABEL org.opencontainers.image.source="https://github.com/Khoren7788/Inspiration-English-Moodle"
 LABEL description="nginx with Brotli, HTTP/2, and HTTP/3 for Moodle 5.x"
 
 # Install runtime dependencies
