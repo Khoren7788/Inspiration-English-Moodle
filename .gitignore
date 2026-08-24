@@ -1,37 +1,120 @@
-# Environment configuration (contains secrets)
+# ============================================
+# Inspiration English Moodle
+# .gitignore
+# ============================================
+
+# ----------------------------
+# Environment / secrets
+# ----------------------------
 .env
-.envrc.local
+.env.*
+!.env.example
 
-# Moodle code (managed via git clone separately)
-/moodle/
+# ----------------------------
+# SSL certificates / private keys
+# ----------------------------
+docker/nginx/ssl/
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
 
-# Moodle data directory (runtime data)
-/moodledata/
+# ----------------------------
+# Moodle configuration
+# ----------------------------
+config.php
 
-# Backups (if created locally)
-backups/
+# ----------------------------
+# Moodle data
+# ----------------------------
+moodledata/
+data/
+cache/
+localcache/
+sessions/
+temp/
+trashdir/
 
+# ----------------------------
+# Database files / backups
+# ----------------------------
+*.sql
+*.sql.gz
+*.dump
+*.bak
+
+# ----------------------------
 # Logs
+# ----------------------------
 *.log
+logs/
+log/
 
-# OS files
-.DS_Store
-Thumbs.db
+# ----------------------------
+# Docker local/override files
+# ----------------------------
+docker-compose.override.yml
+compose.override.yml
 
-# IDE files
+# ----------------------------
+# IDE / Editor
+# ----------------------------
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# Docker volumes (managed by Docker)
-# Not needed in .gitignore as they're not in the project directory
+# ----------------------------
+# Operating system files
+# ----------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
 
+# ----------------------------
 # Temporary files
-tmp/
-temp/
+# ----------------------------
 *.tmp
+*.temp
+*.cache
 
-# SSL certificates (use your own for production)
-docker/nginx/ssl/*.pem
+# ----------------------------
+# Backup files
+# ----------------------------
+*.backup
+*.old
+*.orig
+
+# ----------------------------
+# Python
+# ----------------------------
+__pycache__/
+*.py[cod]
+
+# ----------------------------
+# Node
+# ----------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ----------------------------
+# Composer
+# ----------------------------
+vendor/
+
+# ----------------------------
+# Test / coverage
+# ----------------------------
+coverage/
+.phpunit.result.cache
+
+# ----------------------------
+# Misc
+# ----------------------------
+*.pid
+*.sock
