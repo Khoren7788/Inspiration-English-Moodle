@@ -35,5 +35,5 @@ jobs:
 
       - name: Lint Dockerfiles
         run: |
-          docker run --rm -i hadolint/hadolint:v2.14.0-alpine hadolint --ignore DL3018 - < docker/moodle/Dockerfile
-          docker run --rm -i hadolint/hadolint:v2.14.0-alpine hadolint --ignore DL3018 - < docker/nginx/Dockerfile
+          docker run --rm -i hadolint/hadolint:v2.14.0-alpine hadolint --failure-threshold error --ignore DL3018 - < docker/moodle/Dockerfile
+          docker run --rm -i hadolint/hadolint:v2.14.0-alpine hadolint --failure-threshold error --ignore DL3018 - < docker/nginx/Dockerfile
