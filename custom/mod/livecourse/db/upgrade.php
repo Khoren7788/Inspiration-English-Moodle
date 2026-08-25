@@ -70,5 +70,17 @@ function xmldb_livecourse_upgrade(int $oldversion): bool {
         }
         upgrade_mod_savepoint(true, 2026082503, 'livecourse');
     }
+    if ($oldversion < 2026082504) {
+        $table = new xmldb_table('livecourse_session');
+        $field = new xmldb_field('currentmaterialid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'currentquestionid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $key = new xmldb_key('material', XMLDB_KEY_FOREIGN, ['currentmaterialid'], 'livecourse_material', ['id']);
+        if ($dbman->find_key_name($table, $key) === false) {
+            $dbman->add_key($table, $key);
+        }
+        upgrade_mod_savepoint(true, 2026082504, 'livecourse');
+    }
     return true;
 }

@@ -5,6 +5,45 @@
     margin-bottom: 1.5rem;
 }
 
+.livecourse-player {
+    align-items: start;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr);
+    margin-bottom: 1.5rem;
+}
+
+.livecourse-content-stage,
+.livecourse-stage {
+    min-height: 220px;
+}
+
+.livecourse-content-stage {
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    position: relative;
+}
+
+.livecourse-slide-counter {
+    color: #59636e;
+    font-size: 0.85rem;
+    font-weight: 700;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}
+
+.livecourse-empty-slide {
+    align-items: center;
+    color: #6c757d;
+    display: flex;
+    justify-content: center;
+    min-height: 180px;
+    text-align: center;
+}
+
 .livecourse-panel,
 .livecourse-stage,
 .livecourse-question-row {
@@ -98,4 +137,10 @@
     background: var(--bs-light-bg-subtle, #f8f9fa);
     border-radius: 0.5rem;
     padding: 0.75rem;
+}
+
+@media (max-width: 767.98px) {
+    .livecourse-player {
+        grid-template-columns: 1fr;
+    }
 }

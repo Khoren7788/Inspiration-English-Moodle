@@ -57,7 +57,36 @@ if ($action === 'respond') {
     }
 }
 
-$payload = ['active' => (bool) $session, 'question' => null];
+$payload = ['active' => (bool) $session, 'question' => null, 'material' => null];
+if ($session && $session->currentmaterialid) {
+    $material = $DB->get_record('livecourse_material', [
+        'id' => $session->currentmaterialid,
+        'livecourseid' => $livecourse->id,
+        'visible' => 1,
+    ]);
+    if ($material) {
+        $orderedids = array_keys($DB->get_records('livecourse_material', [
+            'livecourseid' => $livecourse->id,
+            'visible' => 1,
+        ], 'sortorder, id', 'id'));
+        $position = array_search((int) $material->id, array_map('intval', $orderedids), true);
+        $payload['material'] = [
+            'id' => (int) $material->id,
+            'title' => format_string($material->title),
+            'type' => $material->materialtype,
+            'description' => format_text($material->description ?? '', FORMAT_PLAIN),
+            'content' => $material->materialtype === 'page'
+                ? format_text($material->content ?? '', FORMAT_HTML, ['context' => $context])
+                : '',
+            'url' => $material->url,
+            'embedurl' => $material->materialtype === 'video'
+                ? livecourse_get_youtube_embed_url($material->url)
+                : null,
+            'position' => $position === false ? 1 : $position + 1,
+            'total' => count($orderedids),
+        ];
+    }
+}
 if ($session && $session->currentquestionid) {
     $question = $DB->get_record('livecourse_question', ['id' => $session->currentquestionid], '*', MUST_EXIST);
     $response = $DB->get_record('livecourse_response', [

@@ -6,13 +6,33 @@ define([], function() {
     const render = (config, state) => {
         const status = document.getElementById('livecourse-status');
         const stage = document.getElementById('livecourse-stage');
-        if (!status || !stage) {
+        const contentStage = document.getElementById('livecourse-content-stage');
+        if (!status || !stage || !contentStage) {
             return;
         }
         if (!state.active) {
             status.textContent = config.strings.closed;
             stage.innerHTML = '';
+            contentStage.innerHTML = '';
             return;
+        }
+        if (state.material) {
+            const material = state.material;
+            let materialHtml = `<div class="livecourse-slide-counter">${material.position} / ${material.total}</div>` +
+                `<h2>${escapeHtml(material.title)}</h2>${material.description || ''}`;
+            if (material.type === 'page') {
+                materialHtml += `<div class="livecourse-page-content">${material.content || ''}</div>`;
+            } else if (material.embedurl) {
+                materialHtml += `<iframe class="livecourse-material-video" src="${escapeHtml(material.embedurl)}" ` +
+                    `allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" ` +
+                    `allowfullscreen title="${escapeHtml(material.title)}"></iframe>`;
+            } else if (material.url) {
+                materialHtml += `<a class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer" ` +
+                    `href="${escapeHtml(material.url)}">${escapeHtml(config.strings.openmaterial)}</a>`;
+            }
+            contentStage.innerHTML = materialHtml;
+        } else {
+            contentStage.innerHTML = `<div class="livecourse-empty-slide">${escapeHtml(config.strings.waitingmaterial)}</div>`;
         }
         if (!state.question) {
             status.textContent = config.strings.waiting;
@@ -129,10 +149,37 @@ define([], function() {
         openSocket();
     };
 
+    const bindTeacherControls = config => {
+        document.querySelectorAll('.livecourse-realtime-form').forEach(form => {
+            form.addEventListener('submit', async event => {
+                event.preventDefault();
+                const button = form.querySelector('button[type="submit"]');
+                if (button) {
+                    button.disabled = true;
+                }
+                try {
+                    await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        credentials: 'same-origin'
+                    });
+                    await refresh(config);
+                } finally {
+                    if (button) {
+                        button.disabled = false;
+                    }
+                }
+            });
+        });
+    };
+
     return {
         init: config => {
             refresh(config);
             connect(config);
+            if (config.teacher) {
+                bindTeacherControls(config);
+            }
         }
     };
 });

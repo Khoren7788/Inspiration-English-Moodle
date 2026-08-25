@@ -27,6 +27,8 @@ $PAGE->requires->js_call_amd('mod_livecourse/live', 'init', [[
         'choose' => get_string('choosematch', 'mod_livecourse'),
         'responses' => get_string('responses', 'mod_livecourse'),
         'correct' => get_string('correctresponses', 'mod_livecourse'),
+        'waitingmaterial' => get_string('waitingformaterial', 'mod_livecourse'),
+        'openmaterial' => get_string('openmaterial', 'mod_livecourse'),
     ],
 ]]);
 
@@ -36,10 +38,15 @@ if (!empty($livecourse->intro)) {
     echo $OUTPUT->box(format_module_intro('livecourse', $livecourse, $cm->id), 'generalbox mod_introbox');
 }
 
-require(__DIR__ . '/materials_view.php');
+echo html_writer::div('', 'livecourse-status', ['id' => 'livecourse-status']);
+echo html_writer::start_div('livecourse-player');
+echo html_writer::div('', 'livecourse-content-stage', ['id' => 'livecourse-content-stage']);
+echo html_writer::div('', 'livecourse-stage', ['id' => 'livecourse-stage']);
+echo html_writer::end_div();
 
 if (has_capability('mod/livecourse:manage', $context)) {
     require(__DIR__ . '/teacher_view.php');
+    require(__DIR__ . '/materials_view.php');
 } else {
     require(__DIR__ . '/student_view.php');
 }

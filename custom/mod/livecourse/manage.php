@@ -99,14 +99,87 @@ switch ($action) {
         ], '*', MUST_EXIST);
         $material->visible = $material->visible ? 0 : 1;
         $DB->update_record('livecourse_material', $material);
+        if (!$material->visible && $session && (int) $session->currentmaterialid === (int) $material->id) {
+            $session->currentmaterialid = null;
+            $session->timemodified = time();
+            $DB->update_record('livecourse_session', $session);
+        }
         break;
 
     case 'deletematerial':
         $materialid = required_param('materialid', PARAM_INT);
+        $DB->set_field('livecourse_session', 'currentmaterialid', null, [
+            'livecourseid' => $livecourse->id,
+            'currentmaterialid' => $materialid,
+        ]);
         $DB->delete_records('livecourse_material', [
             'id' => $materialid,
             'livecourseid' => $livecourse->id,
         ]);
+        break;
+
+    case 'showmaterial':
+        $materialid = required_param('materialid', PARAM_INT);
+        $material = $DB->get_record('livecourse_material', [
+            'id' => $materialid,
+            'livecourseid' => $livecourse->id,
+        ], '*', MUST_EXIST);
+        if (!$material->visible) {
+            $material->visible = 1;
+            $DB->update_record('livecourse_material', $material);
+        }
+        if (!$session) {
+            $session = (object) [
+                'livecourseid' => $livecourse->id,
+                'status' => 1,
+                'currentquestionid' => null,
+                'currentmaterialid' => $material->id,
+                'startedby' => $USER->id,
+                'timestarted' => time(),
+                'timeended' => 0,
+                'timemodified' => time(),
+            ];
+            $session->id = $DB->insert_record('livecourse_session', $session);
+        } else {
+            $session->currentmaterialid = $material->id;
+            $session->timemodified = time();
+            $DB->update_record('livecourse_session', $session);
+        }
+        break;
+
+    case 'nextmaterial':
+    case 'previousmaterial':
+        if ($session) {
+            $materials = array_values($DB->get_records('livecourse_material', [
+                'livecourseid' => $livecourse->id,
+                'visible' => 1,
+            ], 'sortorder, id'));
+            if ($materials) {
+                $currentindex = -1;
+                foreach ($materials as $index => $material) {
+                    if ((int) $material->id === (int) $session->currentmaterialid) {
+                        $currentindex = $index;
+                        break;
+                    }
+                }
+                $offset = $action === 'nextmaterial' ? 1 : -1;
+                $targetindex = max(0, min(count($materials) - 1, $currentindex + $offset));
+                if ($currentindex === -1 && $action === 'previousmaterial') {
+                    $targetindex = count($materials) - 1;
+                }
+                $session->currentmaterialid = $materials[$targetindex]->id;
+                $session->timemodified = time();
+                $DB->update_record('livecourse_session', $session);
+            }
+        }
+        break;
+
+    case 'closematerial':
+        if ($session) {
+            $session->currentmaterialid = null;
+            $session->timemodified = time();
+            $DB->update_record('livecourse_session', $session);
+        }
         break;
 
     case 'startsession':
@@ -115,6 +188,7 @@ switch ($action) {
                 'livecourseid' => $livecourse->id,
                 'status' => 1,
                 'currentquestionid' => null,
+                'currentmaterialid' => null,
                 'startedby' => $USER->id,
                 'timestarted' => time(),
                 'timeended' => 0,
@@ -131,6 +205,7 @@ switch ($action) {
                 'livecourseid' => $livecourse->id,
                 'status' => 1,
                 'currentquestionid' => $question->id,
+                'currentmaterialid' => null,
                 'startedby' => $USER->id,
                 'timestarted' => time(),
                 'timeended' => 0,
@@ -156,6 +231,7 @@ switch ($action) {
         if ($session) {
             $session->status = 0;
             $session->currentquestionid = null;
+            $session->currentmaterialid = null;
             $session->timeended = time();
             $session->timemodified = time();
             $DB->update_record('livecourse_session', $session);

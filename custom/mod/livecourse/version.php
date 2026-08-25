@@ -2,7 +2,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_livecourse';
-$plugin->version = 2026082503;
+$plugin->version = 2026082504;
 $plugin->requires = 2025041400;
 $plugin->maturity = MATURITY_ALPHA;
-$plugin->release = '0.4.0';
+$plugin->release = '0.5.0';

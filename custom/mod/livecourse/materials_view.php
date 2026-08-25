@@ -42,16 +42,25 @@ if ($materials || $isteacher) {
         }
         if ($isteacher) {
             echo html_writer::start_div('livecourse-material-actions mt-2');
-            foreach (['togglematerial', 'deletematerial'] as $action) {
-                echo html_writer::start_tag('form', ['method' => 'post', 'action' => new moodle_url('/mod/livecourse/manage.php')]);
+            foreach (['showmaterial', 'togglematerial', 'deletematerial'] as $action) {
+                $formattributes = ['method' => 'post', 'action' => new moodle_url('/mod/livecourse/manage.php')];
+                if ($action === 'showmaterial') {
+                    $formattributes['class'] = 'livecourse-realtime-form';
+                }
+                echo html_writer::start_tag('form', $formattributes);
                 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $cm->id]);
                 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
                 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => $action]);
                 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'materialid', 'value' => $material->id]);
-                $label = $action === 'togglematerial'
-                    ? ($material->visible ? get_string('hidematerial', 'mod_livecourse') : get_string('showmaterial', 'mod_livecourse'))
-                    : get_string('deletematerial', 'mod_livecourse');
-                echo html_writer::tag('button', $label, ['class' => 'btn btn-sm btn-secondary', 'type' => 'submit']);
+                $label = match ($action) {
+                    'showmaterial' => get_string('showlive', 'mod_livecourse'),
+                    'togglematerial' => $material->visible
+                        ? get_string('hidematerial', 'mod_livecourse')
+                        : get_string('showmaterial', 'mod_livecourse'),
+                    default => get_string('deletematerial', 'mod_livecourse'),
+                };
+                $class = $action === 'showmaterial' ? 'btn btn-sm btn-success' : 'btn btn-sm btn-secondary';
+                echo html_writer::tag('button', $label, ['class' => $class, 'type' => 'submit']);
                 echo html_writer::end_tag('form');
             }
             echo html_writer::end_div();

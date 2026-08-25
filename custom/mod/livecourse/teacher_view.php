@@ -4,10 +4,13 @@ defined('MOODLE_INTERNAL') || die();
 echo html_writer::start_div('livecourse-layout');
 echo html_writer::start_div('livecourse-panel');
 echo html_writer::tag('h3', get_string('sessioncontrols', 'mod_livecourse'));
-echo html_writer::div('', 'livecourse-status', ['id' => 'livecourse-status']);
 
-foreach (['startsession', 'closequestion', 'endsession'] as $action) {
-    echo html_writer::start_tag('form', ['method' => 'post', 'action' => new moodle_url('/mod/livecourse/manage.php')]);
+foreach (['startsession', 'previousmaterial', 'nextmaterial', 'closematerial', 'closequestion', 'endsession'] as $action) {
+    echo html_writer::start_tag('form', [
+        'method' => 'post',
+        'action' => new moodle_url('/mod/livecourse/manage.php'),
+        'class' => 'livecourse-realtime-form',
+    ]);
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $cm->id]);
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => $action]);
@@ -84,7 +87,11 @@ foreach ($questions as $question) {
     echo html_writer::div(format_text($question->questiontext, FORMAT_PLAIN) .
         html_writer::span(get_string('type' . $question->questiontype, 'mod_livecourse'), 'badge bg-secondary ms-2'),
         'livecourse-question-title');
-    echo html_writer::start_tag('form', ['method' => 'post', 'action' => new moodle_url('/mod/livecourse/manage.php')]);
+    echo html_writer::start_tag('form', [
+        'method' => 'post',
+        'action' => new moodle_url('/mod/livecourse/manage.php'),
+        'class' => 'livecourse-realtime-form',
+    ]);
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $cm->id]);
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'publish']);
@@ -93,4 +100,3 @@ foreach ($questions as $question) {
     echo html_writer::end_tag('form');
     echo html_writer::end_div();
 }
-echo html_writer::div('', 'livecourse-stage mt-4', ['id' => 'livecourse-stage']);
