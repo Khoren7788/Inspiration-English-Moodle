@@ -38,6 +38,7 @@ if ($action === 'respond') {
             'iscorrect' => (int) ($answer === $question->correctoption),
             'timeanswered' => time(),
         ]);
+        livecourse_publish_event($cm->id);
     }
 }
 
@@ -73,4 +74,3 @@ if ($session && $session->currentquestionid) {
 }
 
 echo json_encode($payload, JSON_THROW_ON_ERROR);
-

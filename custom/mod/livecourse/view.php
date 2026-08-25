@@ -18,6 +18,7 @@ $PAGE->requires->js_call_amd('mod_livecourse/live', 'init', [[
     'cmid' => $cm->id,
     'teacher' => has_capability('mod/livecourse:manage', $context),
     'sesskey' => sesskey(),
+    'wstoken' => livecourse_create_websocket_token($USER->id, $cm->id),
     'strings' => [
         'waiting' => get_string('waitingforquestion', 'mod_livecourse'),
         'submitted' => get_string('answersubmitted', 'mod_livecourse'),

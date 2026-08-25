@@ -1,0 +1,15 @@
+{
+  "name": "inspiration-livecourse-ws",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Authenticated WebSocket event gateway for Moodle Live course",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "redis": "4.7.0",
+    "ws": "8.18.0"
+  }
+}
+

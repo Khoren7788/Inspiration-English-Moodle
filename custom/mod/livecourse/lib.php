@@ -64,7 +64,35 @@ function livecourse_get_youtube_embed_url(string $url): ?string {
     return 'https://www.youtube-nocookie.com/embed/' . $videoid;
 }
 
-function livecourse_is_embeddable_jitsi_url(string $url): bool {
-    $parts = parse_url($url);
-    return $parts && ($parts['scheme'] ?? '') === 'https' && strtolower($parts['host'] ?? '') === 'meet.jit.si';
+function livecourse_base64url_encode(string $value): string {
+    return rtrim(strtr(base64_encode($value), '+/', '-_'), '=');
+}
+
+function livecourse_create_websocket_token(int $userid, int $cmid): string {
+    $secret = (string) getenv('LIVECOURSE_WS_SECRET');
+    if (strlen($secret) < 32) {
+        throw new moodle_exception('websocketnotconfigured', 'mod_livecourse');
+    }
+    $payload = livecourse_base64url_encode(json_encode([
+        'uid' => $userid,
+        'cmid' => $cmid,
+        'exp' => time() + 14400,
+    ], JSON_THROW_ON_ERROR));
+    $signature = livecourse_base64url_encode(hash_hmac('sha256', $payload, $secret, true));
+    return $payload . '.' . $signature;
+}
+
+function livecourse_publish_event(int $cmid): void {
+    try {
+        $redis = new Redis();
+        $redis->connect((string) (getenv('VALKEY_HOST') ?: 'valkey'), (int) (getenv('VALKEY_PORT') ?: 6379), 1.5);
+        $password = (string) getenv('VALKEY_PASSWORD');
+        if ($password !== '') {
+            $redis->auth($password);
+        }
+        $redis->publish('livecourse:' . $cmid, 'refresh');
+        $redis->close();
+    } catch (Throwable $exception) {
+        debugging('Live course WebSocket publish failed: ' . $exception->getMessage(), DEBUG_DEVELOPER);
+    }
 }

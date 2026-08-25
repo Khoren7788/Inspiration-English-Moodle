@@ -35,6 +35,18 @@ function xmldb_livecourse_upgrade(int $oldversion): bool {
 
         upgrade_mod_savepoint(true, 2026082501, 'livecourse');
     }
+
+    if ($oldversion < 2026082502) {
+        $table = new xmldb_table('livecourse');
+        $field = new xmldb_field('meetingurl');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        $field = new xmldb_field('meetingenabled');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2026082502, 'livecourse');
+    }
     return true;
 }
-

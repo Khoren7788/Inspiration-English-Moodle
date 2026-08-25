@@ -33,7 +33,7 @@ jobs:
 
       - name: Check required files
         run: |
-          files=(".env.example" "compose.yml" "docker/moodle/Dockerfile" "docker/moodle/entrypoint.sh" "docker/nginx/Dockerfile" "docker/nginx/nginx.conf")
+          files=(".env.example" "compose.yml" "docker/moodle/Dockerfile" "docker/moodle/entrypoint.sh" "docker/nginx/Dockerfile" "docker/nginx/nginx.conf" "docker/livecourse-ws/Dockerfile" "docker/livecourse-ws/server.js")
           for file in "${files[@]}"; do
             if [ ! -f "$file" ]; then
               echo "Missing required file: $file"
@@ -282,7 +282,7 @@ jobs:
 
       - name: Check service health
         run: |
-          services=("moodle" "nginx" "database" "valkey")
+          services=("moodle" "nginx" "database" "valkey" "livecourse-ws")
           for service in "${services[@]}"; do
             if docker compose ps "$service" | grep -q "Up"; then
               echo "$service is running"
@@ -317,6 +317,11 @@ jobs:
           docker compose exec -T valkey valkey-cli -a test_valkey_789 PING | grep -q "PONG"
           echo "Valkey connection working"
 
+      - name: Test Live Course WebSocket health endpoint
+        run: |
+          docker compose exec -T livecourse-ws wget -qO- http://localhost:8081/health | grep -q "ok"
+          echo "Live Course WebSocket gateway working"
+
       - name: Test Ofelia cron
         run: |
           sleep 65  # Wait for cron to run at least once
@@ -340,6 +345,8 @@ jobs:
           docker compose logs --tail=50 valkey
           echo "=== Ofelia Logs ==="
           docker compose logs --tail=50 ofelia
+          echo "=== Live Course WebSocket Logs ==="
+          docker compose logs --tail=50 livecourse-ws
 
       - name: Cleanup
         if: always()

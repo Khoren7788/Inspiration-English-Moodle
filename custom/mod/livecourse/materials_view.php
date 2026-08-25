@@ -2,26 +2,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $isteacher = has_capability('mod/livecourse:manage', $context);
-if (!empty($livecourse->meetingenabled) && !empty($livecourse->meetingurl)) {
-    echo html_writer::start_div('livecourse-video-panel mb-4');
-    echo html_writer::tag('h3', get_string('videocall', 'mod_livecourse'));
-    if (livecourse_is_embeddable_jitsi_url($livecourse->meetingurl)) {
-        echo html_writer::tag('iframe', '', [
-            'src' => $livecourse->meetingurl,
-            'class' => 'livecourse-video-frame',
-            'allow' => 'camera; microphone; fullscreen; display-capture; autoplay',
-            'referrerpolicy' => 'no-referrer',
-            'title' => get_string('videocall', 'mod_livecourse'),
-        ]);
-    }
-    echo html_writer::link($livecourse->meetingurl, get_string('joinvideocall', 'mod_livecourse'), [
-        'class' => 'btn btn-primary mt-2',
-        'target' => '_blank',
-        'rel' => 'noopener noreferrer',
-    ]);
-    echo html_writer::end_div();
-}
-
 $materialconditions = ['livecourseid' => $livecourse->id];
 if (!$isteacher) {
     $materialconditions['visible'] = 1;
@@ -75,4 +55,3 @@ if ($materials || $isteacher) {
     }
     echo html_writer::end_div();
 }
-

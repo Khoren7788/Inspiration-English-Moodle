@@ -27,6 +27,8 @@ services:
     depends_on:
       moodle:
         condition: service_healthy
+      livecourse-ws:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/nginx-health"]
       interval: 30s
@@ -61,6 +63,7 @@ services:
       - VALKEY_HOST=${VALKEY_HOST:-valkey}
       - VALKEY_PORT=${VALKEY_PORT:-6379}
       - VALKEY_PASSWORD=${VALKEY_PASSWORD:?VALKEY_PASSWORD is required}
+      - LIVECOURSE_WS_SECRET=${LIVECOURSE_WS_SECRET:?LIVECOURSE_WS_SECRET is required}
       - SMTP_HOST=${SMTP_HOST:-mailpit}
       - SMTP_PORT=${SMTP_PORT:-1025}
       - SMTP_NOREPLY=${SMTP_NOREPLY:-noreply@example.com}
@@ -180,6 +183,33 @@ services:
       - backend
     depends_on:
       - moodle-cron
+
+  # ==========================================================================
+  # Live Course WebSocket Gateway
+  # ==========================================================================
+  livecourse-ws:
+    build:
+      context: ./docker/livecourse-ws
+      dockerfile: Dockerfile
+    image: ${LIVECOURSE_WS_IMAGE:-ghcr.io/khoren7788/inspiration-english-moodle/livecourse-ws:latest}
+    container_name: ${COMPOSE_PROJECT_NAME:-moodle}_livecourse_ws
+    restart: unless-stopped
+    environment:
+      - PORT=8081
+      - REDIS_URL=redis://valkey:6379
+      - VALKEY_PASSWORD=${VALKEY_PASSWORD:?VALKEY_PASSWORD is required}
+      - LIVECOURSE_WS_SECRET=${LIVECOURSE_WS_SECRET:?LIVECOURSE_WS_SECRET is required}
+    networks:
+      - backend
+    depends_on:
+      valkey:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8081/health"]
+      interval: 20s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
 
   # ==========================================================================
   # Mailpit - Development Mail Catcher (Optional)

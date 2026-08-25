@@ -131,4 +131,5 @@ switch ($action) {
 }
 
 $transaction->allow_commit();
+livecourse_publish_event($cm->id);
 redirect($redirect);

@@ -64,15 +64,43 @@ define([], function() {
                 render(config, await response.json());
             }
         } catch (error) {
-            // A transient network failure will be retried by the next polling cycle.
+            // A WebSocket reconnect or the next event will retry the state request.
         }
+    };
+
+    const connect = config => {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const url = `${protocol}//${window.location.host}/livecourse-ws?token=${encodeURIComponent(config.wstoken)}`;
+        let reconnectDelay = 1000;
+
+        const openSocket = () => {
+            const socket = new WebSocket(url);
+            socket.addEventListener('open', () => {
+                reconnectDelay = 1000;
+            });
+            socket.addEventListener('message', event => {
+                try {
+                    const message = JSON.parse(event.data);
+                    if (message.type === 'refresh' || message.type === 'connected') {
+                        refresh(config);
+                    }
+                } catch (error) {
+                    // Ignore malformed gateway messages.
+                }
+            });
+            socket.addEventListener('close', () => {
+                window.setTimeout(openSocket, reconnectDelay);
+                reconnectDelay = Math.min(reconnectDelay * 2, 30000);
+            });
+            socket.addEventListener('error', () => socket.close());
+        };
+        openSocket();
     };
 
     return {
         init: config => {
             refresh(config);
-            window.setInterval(() => refresh(config), 2000);
+            connect(config);
         }
     };
 });
-
