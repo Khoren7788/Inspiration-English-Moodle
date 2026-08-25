@@ -37,8 +37,41 @@ function livecourse_delete_instance(int $id): bool {
     }
     $DB->delete_records('livecourse_session', ['livecourseid' => $id]);
     $DB->delete_records('livecourse_question', ['livecourseid' => $id]);
+    $materials = $DB->get_records('livecourse_material', ['livecourseid' => $id], '', 'id');
+    $fs = get_file_storage();
+    $cm = get_coursemodule_from_instance('livecourse', $id);
+    if ($cm) {
+        $contextid = context_module::instance($cm->id)->id;
+        foreach ($materials as $material) {
+            $fs->delete_area_files($contextid, 'mod_livecourse', 'content', $material->id);
+        }
+    }
     $DB->delete_records('livecourse_material', ['livecourseid' => $id]);
     $DB->delete_records('livecourse', ['id' => $id]);
+    return true;
+}
+
+function livecourse_pluginfile($course, $cm, $context, string $filearea, array $args,
+        bool $forcedownload, array $options = []): bool {
+    global $DB;
+    if ($context->contextlevel !== CONTEXT_MODULE || $filearea !== 'content') {
+        return false;
+    }
+    require_login($course, true, $cm);
+    require_capability('mod/livecourse:view', $context);
+    $itemid = (int) array_shift($args);
+    $material = $DB->get_record('livecourse_material', ['id' => $itemid, 'livecourseid' => $cm->instance],
+        'id,visible');
+    if (!$material || (!$material->visible && !has_capability('mod/livecourse:manage', $context))) {
+        return false;
+    }
+    $filename = array_pop($args);
+    $filepath = '/' . ($args ? implode('/', $args) . '/' : '');
+    $file = get_file_storage()->get_file($context->id, 'mod_livecourse', $filearea, $itemid, $filepath, $filename);
+    if (!$file || $file->is_directory()) {
+        return false;
+    }
+    send_stored_file($file, 0, 0, $forcedownload, $options);
     return true;
 }
 

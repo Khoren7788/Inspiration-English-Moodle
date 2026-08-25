@@ -38,7 +38,8 @@ define([], function() {
                 item.classList.toggle('active', Number(item.dataset.livecourseMaterial) === material.id);
             });
             let materialHtml = `<div class="livecourse-slide-counter">${material.position} / ${material.total}</div>` +
-                `<h2>${escapeHtml(material.title)}</h2>${material.description || ''}`;
+                (material.displaytitle === false ? '' : `<h2>${escapeHtml(material.title)}</h2>`) +
+                `${material.description || ''}`;
             if (material.type === 'page') {
                 materialHtml += `<div class="livecourse-page-content">${material.content || ''}</div>`;
             } else if (material.embedurl) {

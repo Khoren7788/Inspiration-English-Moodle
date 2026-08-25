@@ -91,6 +91,13 @@ if ($materials || $isteacher) {
             echo html_writer::end_div();
 
             $suffix = (string) $material->id;
+            if ($material->materialtype === 'page') {
+                echo html_writer::link(new moodle_url('/mod/livecourse/page.php', [
+                    'id' => $cm->id, 'materialid' => $material->id,
+                ]), get_string('editcontentpage', 'mod_livecourse'), ['class' => 'btn btn-outline-primary mt-3']);
+                echo html_writer::end_div();
+                continue;
+            }
             echo html_writer::start_tag('details', ['class' => 'livecourse-material-editor']);
             echo html_writer::tag('summary', get_string('editmaterial', 'mod_livecourse'));
             echo html_writer::start_tag('form', [
@@ -119,7 +126,6 @@ if ($materials || $isteacher) {
                 'video' => get_string('materialvideo', 'mod_livecourse'),
                 'document' => get_string('materialdocument', 'mod_livecourse'),
                 'link' => get_string('materiallink', 'mod_livecourse'),
-                'page' => get_string('materialpage', 'mod_livecourse'),
             ], 'materialtype', $material->materialtype, false, [
                 'id' => 'edit-type-' . $suffix,
                 'class' => 'form-select mb-2',

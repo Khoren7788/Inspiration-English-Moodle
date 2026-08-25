@@ -77,6 +77,10 @@ if ($session && $session->currentmaterialid) {
         'visible' => 1,
     ]);
     if ($material) {
+        $description = file_rewrite_pluginfile_urls($material->description ?? '', 'pluginfile.php',
+            $context->id, 'mod_livecourse', 'content', $material->id);
+        $content = file_rewrite_pluginfile_urls($material->content ?? '', 'pluginfile.php',
+            $context->id, 'mod_livecourse', 'content', $material->id);
         $orderedids = array_keys($DB->get_records('livecourse_material', [
             'livecourseid' => $livecourse->id,
             'visible' => 1,
@@ -86,9 +90,11 @@ if ($session && $session->currentmaterialid) {
             'id' => (int) $material->id,
             'title' => format_string($material->title),
             'type' => $material->materialtype,
-            'description' => format_text($material->description ?? '', FORMAT_PLAIN),
+            'description' => !empty($material->displaydescription)
+                ? format_text($description, $material->descriptionformat ?? FORMAT_HTML, ['context' => $context]) : '',
+            'displaytitle' => !empty($material->displaytitle),
             'content' => $material->materialtype === 'page'
-                ? format_text($material->content ?? '', FORMAT_HTML, ['context' => $context])
+                ? format_text($content, $material->contentformat ?? FORMAT_HTML, ['context' => $context])
                 : '',
             'url' => $material->url,
             'embedurl' => $material->materialtype === 'video'

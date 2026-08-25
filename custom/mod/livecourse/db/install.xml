@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/livecourse/db" VERSION="2026082506" COMMENT="XMLDB file for Live course">
+<XMLDB PATH="mod/livecourse/db" VERSION="2026082507" COMMENT="XMLDB file for Live course">
   <TABLES>
     <TABLE NAME="livecourse" COMMENT="Live course activity instances">
       <FIELDS>
@@ -24,7 +24,11 @@
         <FIELD NAME="materialtype" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="link"/>
         <FIELD NAME="url" TYPE="char" LENGTH="1333" NOTNULL="true" DEFAULT=""/>
         <FIELD NAME="description" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="descriptionformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1"/>
         <FIELD NAME="content" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="displaytitle" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="displaydescription" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1"/>
         <FIELD NAME="visible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1"/>
         <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>

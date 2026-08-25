@@ -155,6 +155,7 @@ switch ($action) {
             'livecourseid' => $livecourse->id,
             'currentmaterialid' => $materialid,
         ]);
+        get_file_storage()->delete_area_files($context->id, 'mod_livecourse', 'content', $materialid);
         $DB->delete_records('livecourse_material', [
             'id' => $materialid,
             'livecourseid' => $livecourse->id,

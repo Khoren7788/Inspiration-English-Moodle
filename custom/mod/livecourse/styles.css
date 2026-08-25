@@ -430,6 +430,17 @@
     max-width: 100%;
 }
 
+.livecourse-page-content table {
+    width: 100%;
+}
+
+.livecourse-page-content img,
+.livecourse-page-content video,
+.livecourse-page-content iframe {
+    height: auto;
+    max-width: 100%;
+}
+
 .livecourse-results {
     background: var(--bs-light-bg-subtle, #f8f9fa);
     border-radius: 0.5rem;

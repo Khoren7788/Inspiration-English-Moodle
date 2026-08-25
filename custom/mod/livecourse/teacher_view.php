@@ -62,6 +62,8 @@ echo html_writer::end_div();
 
 echo html_writer::start_div('livecourse-panel livecourse-material-manager mb-4');
 echo html_writer::tag('h3', get_string('addmaterial', 'mod_livecourse'));
+echo html_writer::link(new moodle_url('/mod/livecourse/page.php', ['id' => $cm->id]),
+    get_string('addcontentpage', 'mod_livecourse'), ['class' => 'btn btn-primary mb-3']);
 echo html_writer::start_tag('form', ['method' => 'post', 'action' => new moodle_url('/mod/livecourse/manage.php')]);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $cm->id]);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
@@ -73,7 +75,6 @@ echo html_writer::select([
     'video' => get_string('materialvideo', 'mod_livecourse'),
     'document' => get_string('materialdocument', 'mod_livecourse'),
     'link' => get_string('materiallink', 'mod_livecourse'),
-    'page' => get_string('materialpage', 'mod_livecourse'),
 ], 'materialtype', 'link', false, ['id' => 'materialtype', 'class' => 'form-select mb-2']);
 echo html_writer::start_div('', ['data-material-fields' => 'url']);
 echo html_writer::tag('label', get_string('materialurl', 'mod_livecourse'), ['for' => 'materialurl']);
@@ -81,10 +82,6 @@ echo html_writer::empty_tag('input', ['id' => 'materialurl', 'name' => 'material
 echo html_writer::end_div();
 echo html_writer::tag('label', get_string('materialdescription', 'mod_livecourse'), ['for' => 'materialdescription']);
 echo html_writer::tag('textarea', '', ['id' => 'materialdescription', 'name' => 'materialdescription', 'class' => 'form-control mb-2']);
-echo html_writer::start_div('', ['data-material-fields' => 'page']);
-echo html_writer::tag('label', get_string('materialcontent', 'mod_livecourse'), ['for' => 'materialcontent']);
-echo html_writer::tag('textarea', '', ['id' => 'materialcontent', 'name' => 'materialcontent', 'class' => 'form-control mb-2', 'rows' => 8]);
-echo html_writer::end_div();
 echo html_writer::tag('button', get_string('savematerial', 'mod_livecourse'), ['class' => 'btn btn-primary', 'type' => 'submit']);
 echo html_writer::end_tag('form');
 echo html_writer::end_div();
