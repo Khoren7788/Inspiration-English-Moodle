@@ -24,7 +24,7 @@ docker/nginx/ssl/
 # ----------------------------
 # Moodle configuration
 # ----------------------------
-config.php
+/config.php
 
 # ----------------------------
 # Moodle data

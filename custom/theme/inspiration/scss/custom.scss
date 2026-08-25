@@ -1,27 +1,234 @@
+$inspiration-primary: #2563eb;
+$inspiration-primary-dark: #1d4ed8;
+$inspiration-ink: #17243a;
+$inspiration-border: #e3e9f2;
+$inspiration-surface: #fff;
+$inspiration-background: #f4f7fc;
+
 body {
-    background: #f5f7fb;
+    background: radial-gradient(circle at 8% 0%, rgba(37, 99, 235, 0.08), transparent 28rem), $inspiration-background;
+    color: $inspiration-ink;
 }
 
-.navbar {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+a {
+    color: $inspiration-primary;
+    transition: color 0.18s ease;
 }
 
-.card {
-    border-radius: 16px;
+a:hover {
+    color: $inspiration-primary-dark;
 }
 
-.btn {
-    border-radius: 10px;
+.navbar.fixed-top {
+    backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, 0.94) !important;
+    border-bottom: 1px solid rgba(220, 228, 240, 0.9);
+    box-shadow: 0 8px 30px rgba(25, 45, 80, 0.07);
+}
+
+.navbar-brand {
+    color: $inspiration-ink !important;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.primary-navigation .navigation .nav-link {
+    border-radius: 0.65rem;
+    color: #43526a;
+    font-weight: 600;
+    margin: 0.2rem 0.1rem;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+}
+
+.primary-navigation .navigation .nav-link:hover,
+.primary-navigation .navigation .nav-link.active {
+    background: #edf4ff;
+    color: $inspiration-primary;
 }
 
 #page {
     min-height: 100vh;
 }
 
+#page.drawers .main-inner {
+    background: transparent;
+}
+
 #page-header {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+#page-header .page-header-headings h1,
+.page-header-headings h1 {
+    color: $inspiration-ink;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+}
+
+.card,
+.block,
+.course-content .section,
+.generalbox,
+.activity-wrapper {
+    border: 1px solid $inspiration-border;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(34, 55, 88, 0.055);
+}
+
+.card,
+.block,
+.generalbox {
+    background: $inspiration-surface;
+}
+
+.card-header,
+.block .card-title {
+    background: transparent;
+    border-bottom-color: $inspiration-border;
+    color: $inspiration-ink;
+    font-weight: 750;
+}
+
+.dashboard-card {
+    border: 1px solid $inspiration-border !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 8px 24px rgba(34, 55, 88, 0.06);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.dashboard-card:hover {
+    box-shadow: 0 16px 36px rgba(34, 55, 88, 0.13);
+    transform: translateY(-3px);
+}
+
+.dashboard-card .dashboard-card-img {
+    min-height: 9rem;
+}
+
+.course-content .section {
+    background: rgba(255, 255, 255, 0.92);
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.course-content .section .sectionname {
+    color: $inspiration-ink;
+    font-weight: 800;
+}
+
+.activity-item {
+    border-color: $inspiration-border !important;
+    border-radius: 0.8rem !important;
+    transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.activity-item:hover {
+    background: #f9fbff;
+    box-shadow: 0 5px 18px rgba(37, 99, 235, 0.07);
+}
+
+.btn {
+    border-radius: 0.65rem;
+    font-weight: 650;
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, $inspiration-primary, $inspiration-primary-dark);
+    border-color: $inspiration-primary-dark;
+    box-shadow: 0 5px 14px rgba(37, 99, 235, 0.22);
+}
+
+.btn-secondary {
+    background: #eef2f8;
+    border-color: #dce4ef;
+    color: #33445e;
+}
+
+.form-control,
+.form-select,
+.custom-select {
+    background-color: #fff;
+    border-color: #cfd9e8;
+    border-radius: 0.7rem;
+    min-height: 42px;
+}
+
+.form-control:focus,
+.form-select:focus,
+.custom-select:focus {
+    border-color: #75a7f5;
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.12);
+}
+
+.dropdown-menu {
+    border: 1px solid $inspiration-border;
+    border-radius: 0.8rem;
+    box-shadow: 0 14px 36px rgba(26, 44, 75, 0.14);
+    padding: 0.45rem;
+}
+
+.dropdown-item {
+    border-radius: 0.5rem;
+}
+
+.alert,
+.notification,
+.que {
+    border-radius: 0.85rem;
+}
+
+.badge {
+    border-radius: 999px;
+    padding: 0.38em 0.7em;
+}
+
+.drawer {
+    background: #fbfcff;
+    border-color: $inspiration-border;
+}
+
+.drawer-toggles .drawer-toggler .btn {
+    background: #fff;
+    border: 1px solid $inspiration-border;
+    box-shadow: 0 6px 20px rgba(30, 48, 80, 0.12);
 }
 
 .login-container {
-    border-radius: 18px;
+    border: 1px solid $inspiration-border;
+    border-radius: 1.2rem;
+    box-shadow: 0 24px 60px rgba(26, 45, 78, 0.14);
+    overflow: hidden;
+}
+
+.login-container h1,
+.login-container h2 {
+    color: $inspiration-ink;
+    font-weight: 800;
+}
+
+#page-footer {
+    background: #17243a;
+    color: #d8e2f0;
+    margin-top: 2rem;
+}
+
+@media (max-width: 767.98px) {
+    #page.drawers .main-inner {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .dashboard-card:hover,
+    .btn:hover:not(:disabled) {
+        transform: none;
+    }
 }
