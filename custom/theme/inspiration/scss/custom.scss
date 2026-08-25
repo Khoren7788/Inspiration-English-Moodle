@@ -47,6 +47,48 @@ a:hover {
     color: $inspiration-primary;
 }
 
+.primary-navigation .moremenu .nav-link {
+    align-items: center;
+    background: transparent;
+    border: 0 !important;
+    border-radius: 0.6rem;
+    display: flex;
+    gap: 0.35rem;
+    margin: 0.35rem 0.15rem;
+    min-height: 42px;
+    padding: 0.55rem 0.85rem;
+}
+
+.primary-navigation .moremenu .nav-link:hover,
+.primary-navigation .moremenu .nav-link:focus,
+.primary-navigation .moremenu .nav-link[aria-expanded="true"] {
+    background: #f0f4fa;
+    box-shadow: none !important;
+    color: $inspiration-ink;
+}
+
+.primary-navigation .moremenu .dropdown-menu {
+    border: 1px solid $inspiration-border;
+    border-radius: 0.85rem;
+    box-shadow: 0 18px 45px rgba(24, 43, 76, 0.16);
+    min-width: 250px;
+    padding: 0.5rem;
+}
+
+.primary-navigation .moremenu .dropdown-item {
+    border-radius: 0.55rem;
+    color: #3f4f67;
+    font-weight: 600;
+    padding: 0.65rem 0.75rem;
+}
+
+.primary-navigation .moremenu .dropdown-item:hover,
+.primary-navigation .moremenu .dropdown-item:focus,
+.primary-navigation .moremenu .dropdown-item.active {
+    background: #eef4fd;
+    color: $inspiration-primary-dark;
+}
+
 #page {
     min-height: 100vh;
 }
@@ -137,6 +179,36 @@ a:hover {
 
 .btn:hover:not(:disabled) {
     transform: translateY(-1px);
+}
+
+button:focus,
+.btn:focus,
+.btn.focus,
+.nav-link:focus,
+.dropdown-toggle:focus,
+.dropdown-item:focus,
+[role="button"]:focus {
+    box-shadow: none !important;
+}
+
+button:focus:not(:focus-visible),
+.btn:focus:not(:focus-visible),
+.nav-link:focus:not(:focus-visible),
+.dropdown-toggle:focus:not(:focus-visible),
+.dropdown-item:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible) {
+    outline: 0 !important;
+}
+
+button:focus-visible,
+.btn:focus-visible,
+.nav-link:focus-visible,
+.dropdown-toggle:focus-visible,
+.dropdown-item:focus-visible,
+[role="button"]:focus-visible {
+    box-shadow: none !important;
+    outline: 2px solid rgba(23, 36, 58, 0.38);
+    outline-offset: 2px;
 }
 
 .btn-primary {
