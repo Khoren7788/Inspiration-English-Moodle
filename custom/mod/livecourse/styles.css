@@ -225,18 +225,197 @@
 }
 
 .lc-authoring {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.75rem;
-    margin-top: 1.25rem;
-    padding: 0.75rem;
+    background: #f4f7fb;
+    border: 1px solid #dfe6ef;
+    border-radius: 1rem;
+    box-shadow: 0 18px 48px rgba(29, 50, 77, 0.08);
+    margin-top: 1.5rem;
+    overflow: hidden;
 }
 
 .lc-authoring > summary {
+    align-items: center;
+    background: #fff;
+    border-bottom: 1px solid #e5eaf1;
     cursor: pointer;
-    font-size: 1.1rem;
+    display: grid;
+    gap: 0.15rem 1rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    list-style-position: inside;
+    padding: 1.15rem 1.4rem;
+}
+
+.lc-authoring-title {
+    color: #16263d;
+    font-size: 1.15rem;
     font-weight: 800;
-    padding: 0.35rem 0.5rem 0.85rem;
+}
+
+.lc-authoring-subtitle {
+    color: #708096;
+    font-size: 0.82rem;
+    grid-column: 1;
+}
+
+.lc-authoring-body {
+    padding: 1.25rem;
+}
+
+.lc-control-panel,
+.lc-library-panel {
+    background: #fff;
+    border: 1px solid #e1e7ef;
+    border-radius: 0.9rem;
+    box-shadow: 0 7px 20px rgba(31, 49, 74, 0.045);
+    margin-bottom: 1rem;
+    padding: 1.15rem;
+}
+
+.lc-section-heading {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.lc-section-heading h3 {
+    color: #172941;
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.lc-section-heading p {
+    color: #718096;
+    font-size: 0.78rem;
+    margin: 0.2rem 0 0;
+}
+
+.lc-live-pill,
+.lc-count-badge,
+.lc-step-badge {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 0.72rem;
+    font-weight: 800;
+    justify-content: center;
+}
+
+.lc-live-pill {
+    background: #e9f8ef;
+    color: #15733a;
+    padding: 0.35rem 0.65rem;
+    text-transform: uppercase;
+}
+
+.lc-live-pill::before {
+    background: #28a95b;
+    border-radius: 50%;
+    content: "";
+    height: 0.45rem;
+    margin-right: 0.4rem;
+    width: 0.45rem;
+}
+
+.lc-count-badge,
+.lc-step-badge {
+    background: #edf4ff;
+    color: #2466bd;
+    min-height: 2rem;
+    min-width: 2rem;
+    padding: 0 0.55rem;
+}
+
+.lc-control-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.lc-control-actions form {
+    margin: 0;
+}
+
+.lc-control-actions .btn {
+    align-items: center;
+    border-radius: 0.65rem;
+    display: inline-flex;
+    font-size: 0.82rem;
+    font-weight: 700;
+    gap: 0.45rem;
+    min-height: 40px;
+}
+
+.lc-control-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.lc-builder-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 1rem;
+}
+
+.lc-composer-card {
+    border-color: #e1e7ef;
+    box-shadow: 0 7px 20px rgba(31, 49, 74, 0.045);
+    margin: 0;
+    padding: 1.15rem;
+}
+
+.lc-composer-card label,
+.livecourse-material-editor label {
+    color: #34445a;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.lc-composer-card .form-control,
+.lc-composer-card .form-select,
+.livecourse-material-editor .form-control,
+.livecourse-material-editor .form-select {
+    border-color: #dce3ec;
+    border-radius: 0.6rem;
+    min-height: 42px;
+}
+
+.lc-rich-page-link {
+    align-items: center;
+    background: linear-gradient(135deg, #edf5ff, #f7fbff);
+    border: 1px dashed #80aee8;
+    border-radius: 0.7rem;
+    color: #1d5fae;
+    display: flex;
+    font-size: 0.85rem;
+    font-weight: 800;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    text-decoration: none;
+}
+
+.lc-rich-page-link:hover {
+    background: #e8f2ff;
+    color: #174e91;
+    text-decoration: none;
+}
+
+.lc-add-icon {
+    align-items: center;
+    background: #2878e6;
+    border-radius: 50%;
+    color: #fff;
+    display: inline-flex;
+    font-size: 1.1rem;
+    height: 1.75rem;
+    justify-content: center;
+    width: 1.75rem;
 }
 
 .livecourse-layout {
@@ -335,6 +514,18 @@
     gap: 1rem;
     justify-content: space-between;
     margin-bottom: 0.75rem;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.livecourse-question-row:hover {
+    border-color: #b9d1ef;
+    box-shadow: 0 6px 18px rgba(40, 83, 135, 0.08);
+}
+
+.livecourse-question-title {
+    color: #263a54;
+    font-size: 0.88rem;
+    font-weight: 700;
 }
 
 .livecourse-status {
@@ -371,6 +562,15 @@
     grid-template-columns: 1fr;
 }
 
+.livecourse-materials.lc-library-panel {
+    gap: 0.75rem;
+    padding: 1.15rem;
+}
+
+.livecourse-materials > .lc-section-heading {
+    grid-column: 1 / -1;
+}
+
 .livecourse-materials > h3 {
     grid-column: 1 / -1;
 }
@@ -388,6 +588,19 @@
     border-radius: 0.75rem;
     padding: 1rem;
     transition: border-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.livecourse-material-card:hover {
+    border-color: #b9d1ef;
+    box-shadow: 0 7px 20px rgba(40, 83, 135, 0.07);
+}
+
+.livecourse-material-card > .livecourse-page-content {
+    background: #f8fafc;
+    border-radius: 0.6rem;
+    max-height: 180px;
+    overflow: auto;
+    padding: 0.75rem;
 }
 
 .livecourse-material-card[draggable="true"] {
@@ -474,13 +687,6 @@
     width: 100%;
 }
 
-.livecourse-page-content img,
-.livecourse-page-content video,
-.livecourse-page-content iframe {
-    height: auto;
-    max-width: 100%;
-}
-
 .livecourse-results {
     background: var(--bs-light-bg-subtle, #f8f9fa);
     border-radius: 0.5rem;
@@ -514,5 +720,22 @@
 
     .livecourse-player {
         grid-template-columns: 1fr;
+    }
+
+    .lc-authoring-body {
+        padding: 0.75rem;
+    }
+
+    .lc-builder-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lc-control-actions .btn {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .lc-control-actions form {
+        flex: 1 1 calc(50% - 0.6rem);
     }
 }

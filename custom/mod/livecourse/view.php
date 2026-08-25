@@ -131,9 +131,14 @@ echo html_writer::end_div();
 
 if ($isteacher) {
     echo html_writer::start_tag('details', ['class' => 'lc-authoring', 'open' => 'open']);
-    echo html_writer::tag('summary', get_string('authoringtools', 'mod_livecourse'));
+    echo html_writer::start_tag('summary');
+    echo html_writer::span(get_string('authoringtools', 'mod_livecourse'), 'lc-authoring-title');
+    echo html_writer::span(get_string('authoringsubtitle', 'mod_livecourse'), 'lc-authoring-subtitle');
+    echo html_writer::end_tag('summary');
+    echo html_writer::start_div('lc-authoring-body');
     require(__DIR__ . '/teacher_view.php');
     require(__DIR__ . '/materials_view.php');
+    echo html_writer::end_div();
     echo html_writer::end_tag('details');
 } else {
     require(__DIR__ . '/student_view.php');

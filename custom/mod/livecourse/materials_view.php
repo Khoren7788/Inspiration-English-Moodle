@@ -8,13 +8,17 @@ if (!$isteacher) {
 }
 $materials = $DB->get_records('livecourse_material', $materialconditions, 'sortorder, id');
 if ($materials || $isteacher) {
-    echo html_writer::start_div('livecourse-materials mb-4', [
+    echo html_writer::start_div('livecourse-materials lc-library-panel', [
         'data-material-sortable' => $isteacher ? '1' : '0',
         'data-manage-url' => (new moodle_url('/mod/livecourse/manage.php'))->out(false),
         'data-cmid' => $cm->id,
         'data-sesskey' => sesskey(),
     ]);
-    echo html_writer::tag('h3', get_string('coursematerials', 'mod_livecourse'));
+    echo html_writer::start_div('lc-section-heading');
+    echo html_writer::div(html_writer::tag('h3', get_string('coursematerials', 'mod_livecourse')) .
+        html_writer::tag('p', get_string('coursematerialssubtitle', 'mod_livecourse')));
+    echo html_writer::span((string) count($materials), 'lc-count-badge');
+    echo html_writer::end_div();
     if ($isteacher && $materials) {
         echo html_writer::div(get_string('dragmaterialhelp', 'mod_livecourse'), 'livecourse-sort-help');
     }

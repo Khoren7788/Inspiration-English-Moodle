@@ -1,11 +1,23 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
 
-echo html_writer::start_div('livecourse-layout');
-echo html_writer::start_div('livecourse-panel');
-echo html_writer::tag('h3', get_string('sessioncontrols', 'mod_livecourse'));
+echo html_writer::start_div('lc-control-panel');
+echo html_writer::start_div('lc-section-heading');
+echo html_writer::div(html_writer::tag('h3', get_string('sessioncontrols', 'mod_livecourse')) .
+    html_writer::tag('p', get_string('sessioncontrolssubtitle', 'mod_livecourse')));
+echo html_writer::span(get_string('live', 'mod_livecourse'), 'lc-live-pill');
+echo html_writer::end_div();
+echo html_writer::start_div('lc-control-actions');
 
-foreach (['startsession', 'previousmaterial', 'nextmaterial', 'closematerial', 'closequestion', 'endsession'] as $action) {
+$controls = [
+    'startsession' => ['▶', 'btn-primary'],
+    'previousmaterial' => ['←', 'btn-outline-secondary'],
+    'nextmaterial' => ['→', 'btn-outline-secondary'],
+    'closematerial' => ['×', 'btn-outline-secondary'],
+    'closequestion' => ['✓', 'btn-outline-secondary'],
+    'endsession' => ['■', 'btn-outline-danger'],
+];
+foreach ($controls as $action => [$icon, $class]) {
     echo html_writer::start_tag('form', [
         'method' => 'post',
         'action' => new moodle_url('/mod/livecourse/manage.php'),
@@ -14,13 +26,20 @@ foreach (['startsession', 'previousmaterial', 'nextmaterial', 'closematerial', '
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $cm->id]);
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => $action]);
-    echo html_writer::tag('button', get_string($action, 'mod_livecourse'), ['class' => 'btn btn-secondary mb-2', 'type' => 'submit']);
+    echo html_writer::tag('button', html_writer::span($icon, 'lc-control-icon') . get_string($action, 'mod_livecourse'),
+        ['class' => 'btn ' . $class, 'type' => 'submit']);
     echo html_writer::end_tag('form');
 }
 echo html_writer::end_div();
+echo html_writer::end_div();
 
-echo html_writer::start_div('livecourse-panel');
-echo html_writer::tag('h3', get_string('addquestion', 'mod_livecourse'));
+echo html_writer::start_div('lc-builder-grid');
+echo html_writer::start_div('livecourse-panel lc-composer-card');
+echo html_writer::start_div('lc-section-heading');
+echo html_writer::div(html_writer::tag('h3', get_string('addquestion', 'mod_livecourse')) .
+    html_writer::tag('p', get_string('addquestionsubtitle', 'mod_livecourse')));
+echo html_writer::span('01', 'lc-step-badge');
+echo html_writer::end_div();
 echo html_writer::start_tag('form', ['method' => 'post', 'action' => new moodle_url('/mod/livecourse/manage.php')]);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $cm->id]);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
@@ -58,12 +77,16 @@ echo html_writer::end_div();
 echo html_writer::tag('button', get_string('savequestion', 'mod_livecourse'), ['class' => 'btn btn-primary', 'type' => 'submit']);
 echo html_writer::end_tag('form');
 echo html_writer::end_div();
-echo html_writer::end_div();
 
-echo html_writer::start_div('livecourse-panel livecourse-material-manager mb-4');
-echo html_writer::tag('h3', get_string('addmaterial', 'mod_livecourse'));
+echo html_writer::start_div('livecourse-panel livecourse-material-manager lc-composer-card');
+echo html_writer::start_div('lc-section-heading');
+echo html_writer::div(html_writer::tag('h3', get_string('addmaterial', 'mod_livecourse')) .
+    html_writer::tag('p', get_string('addmaterialsubtitle', 'mod_livecourse')));
+echo html_writer::span('02', 'lc-step-badge');
+echo html_writer::end_div();
 echo html_writer::link(new moodle_url('/mod/livecourse/page.php', ['id' => $cm->id]),
-    get_string('addcontentpage', 'mod_livecourse'), ['class' => 'btn btn-primary mb-3']);
+    html_writer::span('+', 'lc-add-icon') . get_string('addcontentpage', 'mod_livecourse'),
+    ['class' => 'lc-rich-page-link']);
 echo html_writer::start_tag('form', ['method' => 'post', 'action' => new moodle_url('/mod/livecourse/manage.php')]);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'id', 'value' => $cm->id]);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
@@ -85,9 +108,15 @@ echo html_writer::tag('textarea', '', ['id' => 'materialdescription', 'name' => 
 echo html_writer::tag('button', get_string('savematerial', 'mod_livecourse'), ['class' => 'btn btn-primary', 'type' => 'submit']);
 echo html_writer::end_tag('form');
 echo html_writer::end_div();
+echo html_writer::end_div();
 
 $questions = $DB->get_records('livecourse_question', ['livecourseid' => $livecourse->id], 'sortorder, id');
-echo html_writer::tag('h3', get_string('questionbank', 'mod_livecourse'));
+echo html_writer::start_div('lc-library-panel lc-question-library');
+echo html_writer::start_div('lc-section-heading');
+echo html_writer::div(html_writer::tag('h3', get_string('questionbank', 'mod_livecourse')) .
+    html_writer::tag('p', get_string('questionbanksubtitle', 'mod_livecourse')));
+echo html_writer::span((string) count($questions), 'lc-count-badge');
+echo html_writer::end_div();
 if (!$questions) {
     echo $OUTPUT->notification(get_string('noquestions', 'mod_livecourse'), 'info');
 }
@@ -109,3 +138,4 @@ foreach ($questions as $question) {
     echo html_writer::end_tag('form');
     echo html_writer::end_div();
 }
+echo html_writer::end_div();
