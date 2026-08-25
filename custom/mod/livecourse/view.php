@@ -23,6 +23,10 @@ $PAGE->requires->js_call_amd('mod_livecourse/live', 'init', [[
         'waiting' => get_string('waitingforquestion', 'mod_livecourse'),
         'submitted' => get_string('answersubmitted', 'mod_livecourse'),
         'closed' => get_string('sessionclosed', 'mod_livecourse'),
+        'submit' => get_string('submitanswer', 'mod_livecourse'),
+        'choose' => get_string('choosematch', 'mod_livecourse'),
+        'responses' => get_string('responses', 'mod_livecourse'),
+        'correct' => get_string('correctresponses', 'mod_livecourse'),
     ],
 ]]);
 

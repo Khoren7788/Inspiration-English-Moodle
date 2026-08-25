@@ -20,6 +20,9 @@ if ($materials || $isteacher) {
         if (!empty($material->description)) {
             echo html_writer::div(format_text($material->description, FORMAT_PLAIN), 'livecourse-material-description');
         }
+        if ($material->materialtype === 'page' && !empty($material->content)) {
+            echo html_writer::div(format_text($material->content, FORMAT_HTML, ['context' => $context]), 'livecourse-page-content');
+        }
         $embedurl = $material->materialtype === 'video' ? livecourse_get_youtube_embed_url($material->url) : null;
         if ($embedurl) {
             echo html_writer::tag('iframe', '', [
@@ -30,11 +33,13 @@ if ($materials || $isteacher) {
                 'title' => format_string($material->title),
             ]);
         }
-        echo html_writer::link($material->url, get_string('openmaterial', 'mod_livecourse'), [
-            'class' => 'btn btn-outline-primary mt-2',
-            'target' => '_blank',
-            'rel' => 'noopener noreferrer',
-        ]);
+        if ($material->materialtype !== 'page') {
+            echo html_writer::link($material->url, get_string('openmaterial', 'mod_livecourse'), [
+                'class' => 'btn btn-outline-primary mt-2',
+                'target' => '_blank',
+                'rel' => 'noopener noreferrer',
+            ]);
+        }
         if ($isteacher) {
             echo html_writer::start_div('livecourse-material-actions mt-2');
             foreach (['togglematerial', 'deletematerial'] as $action) {

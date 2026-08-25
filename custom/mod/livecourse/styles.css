@@ -80,3 +80,22 @@
     display: flex;
     gap: 0.5rem;
 }
+
+.livecourse-page-content {
+    border-top: 1px solid var(--bs-border-color, #dee2e6);
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+}
+
+.livecourse-page-content img,
+.livecourse-page-content video,
+.livecourse-page-content iframe {
+    height: auto;
+    max-width: 100%;
+}
+
+.livecourse-results {
+    background: var(--bs-light-bg-subtle, #f8f9fa);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+}

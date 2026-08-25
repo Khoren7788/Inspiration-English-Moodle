@@ -17,30 +17,65 @@ $session = $DB->get_record('livecourse_session', ['livecourseid' => $livecourse-
 
 switch ($action) {
     case 'addquestion':
+        $questiontype = required_param('questiontype', PARAM_ALPHA);
+        if (!in_array($questiontype, ['multichoice', 'truefalse', 'shortanswer', 'gapfill', 'matching'], true)) {
+            throw new invalid_parameter_exception('Invalid question type');
+        }
+        $answerdata = '';
+        if ($questiontype === 'multichoice') {
+            $answerdata = required_param('correctoption', PARAM_ALPHA);
+            if (!in_array($answerdata, ['a', 'b', 'c', 'd'], true)) {
+                throw new invalid_parameter_exception('Invalid correct option');
+            }
+        } else if ($questiontype === 'truefalse') {
+            $answerdata = required_param('truefalseanswer', PARAM_ALPHA);
+            if (!in_array($answerdata, ['true', 'false'], true)) {
+                throw new invalid_parameter_exception('Invalid true/false answer');
+            }
+        } else if ($questiontype === 'matching') {
+            $lines = preg_split('/\R/', required_param('matchingpairs', PARAM_TEXT));
+            $pairs = [];
+            foreach ($lines as $line) {
+                $parts = array_map('trim', explode('=', $line, 2));
+                if (count($parts) === 2 && $parts[0] !== '' && $parts[1] !== '') {
+                    $pairs[$parts[0]] = $parts[1];
+                }
+            }
+            if (count($pairs) < 2) {
+                throw new invalid_parameter_exception('At least two matching pairs are required');
+            }
+            $answerdata = json_encode($pairs, JSON_THROW_ON_ERROR);
+        } else {
+            $answerdata = required_param('textanswer', PARAM_TEXT);
+        }
         $record = (object) [
             'livecourseid' => $livecourse->id,
             'questiontext' => required_param('questiontext', PARAM_TEXT),
-            'optiona' => required_param('optiona', PARAM_TEXT),
-            'optionb' => required_param('optionb', PARAM_TEXT),
-            'optionc' => required_param('optionc', PARAM_TEXT),
-            'optiond' => required_param('optiond', PARAM_TEXT),
-            'correctoption' => required_param('correctoption', PARAM_ALPHA),
+            'questiontype' => $questiontype,
+            'answerdata' => $answerdata,
+            'optiona' => optional_param('optiona', '', PARAM_TEXT),
+            'optionb' => optional_param('optionb', '', PARAM_TEXT),
+            'optionc' => optional_param('optionc', '', PARAM_TEXT),
+            'optiond' => optional_param('optiond', '', PARAM_TEXT),
+            'correctoption' => $questiontype === 'multichoice' ? $answerdata : '',
             'sortorder' => $DB->count_records('livecourse_question', ['livecourseid' => $livecourse->id]) + 1,
             'timecreated' => time(),
         ];
-        if (!in_array($record->correctoption, ['a', 'b', 'c', 'd'], true)) {
-            throw new invalid_parameter_exception('Invalid correct option');
+        if ($questiontype === 'multichoice' && in_array('', [
+            $record->optiona, $record->optionb, $record->optionc, $record->optiond,
+        ], true)) {
+            throw new invalid_parameter_exception('All four choices are required');
         }
         $DB->insert_record('livecourse_question', $record);
         break;
 
     case 'addmaterial':
         $materialtype = required_param('materialtype', PARAM_ALPHA);
-        if (!in_array($materialtype, ['video', 'document', 'link'], true)) {
+        if (!in_array($materialtype, ['video', 'document', 'link', 'page'], true)) {
             throw new invalid_parameter_exception('Invalid material type');
         }
-        $materialurl = required_param('materialurl', PARAM_URL);
-        if (!preg_match('#^https://#i', $materialurl)) {
+        $materialurl = optional_param('materialurl', '', PARAM_URL);
+        if ($materialtype !== 'page' && !preg_match('#^https://#i', $materialurl)) {
             throw new invalid_parameter_exception('Material URL must use HTTPS');
         }
         $DB->insert_record('livecourse_material', (object) [
@@ -49,6 +84,7 @@ switch ($action) {
             'materialtype' => $materialtype,
             'url' => $materialurl,
             'description' => optional_param('materialdescription', '', PARAM_TEXT),
+            'content' => $materialtype === 'page' ? optional_param('materialcontent', '', PARAM_CLEANHTML) : null,
             'visible' => 1,
             'sortorder' => $DB->count_records('livecourse_material', ['livecourseid' => $livecourse->id]) + 1,
             'timecreated' => time(),

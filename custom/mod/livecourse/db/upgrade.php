@@ -48,5 +48,27 @@ function xmldb_livecourse_upgrade(int $oldversion): bool {
         }
         upgrade_mod_savepoint(true, 2026082502, 'livecourse');
     }
+    if ($oldversion < 2026082503) {
+        $table = new xmldb_table('livecourse_question');
+        $field = new xmldb_field('questiontype', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, 'multichoice', 'questiontext');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('answerdata', XMLDB_TYPE_TEXT, null, null, null, null, null, 'questiontype');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table = new xmldb_table('livecourse_response');
+        $field = new xmldb_field('answer', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null, 'userid');
+        $dbman->change_field_type($table, $field);
+
+        $table = new xmldb_table('livecourse_material');
+        $field = new xmldb_field('content', XMLDB_TYPE_TEXT, null, null, null, null, null, 'description');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2026082503, 'livecourse');
+    }
     return true;
 }

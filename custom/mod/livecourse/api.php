@@ -19,11 +19,26 @@ if ($action === 'respond') {
     if (!$session || !$session->currentquestionid) {
         throw new moodle_exception('noactivequestion', 'mod_livecourse');
     }
-    $answer = required_param('answer', PARAM_ALPHA);
-    if (!in_array($answer, ['a', 'b', 'c', 'd'], true)) {
+    $answer = required_param('answer', PARAM_RAW_TRIMMED);
+    if ($answer === '' || core_text::strlen($answer) > 10000) {
         throw new invalid_parameter_exception('Invalid answer');
     }
     $question = $DB->get_record('livecourse_question', ['id' => $session->currentquestionid], '*', MUST_EXIST);
+    $type = $question->questiontype ?: 'multichoice';
+    $iscorrect = false;
+    if ($type === 'multichoice') {
+        $iscorrect = in_array($answer, ['a', 'b', 'c', 'd'], true) && $answer === $question->correctoption;
+    } else if ($type === 'truefalse') {
+        $iscorrect = $answer === $question->answerdata;
+    } else if ($type === 'matching') {
+        $submitted = json_decode($answer, true);
+        $expected = json_decode($question->answerdata, true);
+        $iscorrect = is_array($submitted) && is_array($expected) && $submitted === $expected;
+    } else {
+        $normalise = static fn(string $value): string => core_text::strtolower(trim($value));
+        $accepted = array_map($normalise, explode('|', $question->answerdata));
+        $iscorrect = in_array($normalise($answer), $accepted, true);
+    }
     $existing = $DB->get_record('livecourse_response', [
         'sessionid' => $session->id,
         'questionid' => $question->id,
@@ -35,7 +50,7 @@ if ($action === 'respond') {
             'questionid' => $question->id,
             'userid' => $USER->id,
             'answer' => $answer,
-            'iscorrect' => (int) ($answer === $question->correctoption),
+            'iscorrect' => (int) $iscorrect,
             'timeanswered' => time(),
         ]);
         livecourse_publish_event($cm->id);
@@ -53,6 +68,7 @@ if ($session && $session->currentquestionid) {
     $payload['question'] = [
         'id' => (int) $question->id,
         'text' => format_string($question->questiontext),
+        'type' => $question->questiontype ?: 'multichoice',
         'options' => [
             'a' => format_string($question->optiona),
             'b' => format_string($question->optionb),
@@ -61,15 +77,32 @@ if ($session && $session->currentquestionid) {
         ],
         'answer' => $response ? $response->answer : null,
     ];
+    if ($payload['question']['type'] === 'truefalse') {
+        $payload['question']['options'] = [
+            'true' => get_string('true', 'core'),
+            'false' => get_string('false', 'core'),
+        ];
+    } else if ($payload['question']['type'] === 'matching') {
+        $pairs = json_decode($question->answerdata, true) ?: [];
+        $payload['question']['pairs'] = [
+            'left' => array_keys($pairs),
+            'right' => array_values($pairs),
+        ];
+        $payload['question']['options'] = [];
+    } else if (!in_array($payload['question']['type'], ['multichoice', 'truefalse'], true)) {
+        $payload['question']['options'] = [];
+    }
     if (has_capability('mod/livecourse:manage', $context)) {
-        $counts = ['a' => 0, 'b' => 0, 'c' => 0, 'd' => 0];
-        foreach ($DB->get_records('livecourse_response', ['sessionid' => $session->id, 'questionid' => $question->id]) as $item) {
+        $responses = $DB->get_records('livecourse_response', ['sessionid' => $session->id, 'questionid' => $question->id]);
+        $counts = array_fill_keys(array_keys($payload['question']['options']), 0);
+        foreach ($responses as $item) {
             if (isset($counts[$item->answer])) {
                 $counts[$item->answer]++;
             }
         }
         $payload['question']['counts'] = $counts;
-        $payload['question']['correctoption'] = $question->correctoption;
+        $payload['question']['responsecount'] = count($responses);
+        $payload['question']['correctcount'] = count(array_filter($responses, static fn($item) => (bool) $item->iscorrect));
     }
 }
 
