@@ -3,8 +3,10 @@ defined('MOODLE_INTERNAL') || die();
 
 function livecourse_supports(string $feature): ?bool {
     return match ($feature) {
+        FEATURE_MOD_ARCHETYPE => MOD_ARCHETYPE_RESOURCE,
         FEATURE_MOD_INTRO => true,
         FEATURE_SHOW_DESCRIPTION => true,
+        FEATURE_MOD_PURPOSE => MOD_PURPOSE_CONTENT,
         FEATURE_GRADE_HAS_GRADE => false,
         FEATURE_GROUPS => false,
         FEATURE_BACKUP_MOODLE2 => false,
@@ -14,16 +16,95 @@ function livecourse_supports(string $feature): ?bool {
 
 function livecourse_add_instance(stdClass $data, mod_livecourse_mod_form $mform = null): int {
     global $DB;
+    $cmid = $data->coursemodule;
+    $content = $mform ? $data->page['text'] : '';
+    $contentformat = $mform ? $data->page['format'] : FORMAT_HTML;
+    $draftitemid = $mform ? $data->page['itemid'] : 0;
+    $displaytitle = !empty($data->printheading);
+    $displaydescription = !empty($data->printintro);
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
-    return $DB->insert_record('livecourse', $data);
+    unset($data->page, $data->printheading, $data->printintro, $data->initialmaterialid);
+    $data->id = $DB->insert_record('livecourse', $data);
+    $DB->set_field('course_modules', 'instance', $data->id, ['id' => $cmid]);
+    $material = (object) [
+        'livecourseid' => $data->id,
+        'title' => $data->name,
+        'materialtype' => 'page',
+        'url' => '',
+        'description' => $data->intro ?? '',
+        'descriptionformat' => $data->introformat ?? FORMAT_HTML,
+        'content' => $content,
+        'contentformat' => $contentformat,
+        'displaytitle' => $displaytitle,
+        'displaydescription' => $displaydescription,
+        'visible' => 1,
+        'sortorder' => 1,
+        'timecreated' => time(),
+    ];
+    $material->id = $DB->insert_record('livecourse_material', $material);
+    if ($draftitemid) {
+        $context = context_module::instance($cmid);
+        $material->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_livecourse',
+            'content', $material->id, livecourse_editor_options($context, $data->course), $material->content);
+        $DB->update_record('livecourse_material', $material);
+    }
+    return $data->id;
 }
 
 function livecourse_update_instance(stdClass $data, mod_livecourse_mod_form $mform = null): bool {
     global $DB;
+    $cmid = $data->coursemodule;
+    $materialid = (int) ($data->initialmaterialid ?? 0);
+    $content = $mform ? $data->page['text'] : '';
+    $contentformat = $mform ? $data->page['format'] : FORMAT_HTML;
+    $draftitemid = $mform ? $data->page['itemid'] : 0;
+    $displaytitle = !empty($data->printheading);
+    $displaydescription = !empty($data->printintro);
     $data->id = $data->instance;
     $data->timemodified = time();
-    return $DB->update_record('livecourse', $data);
+    unset($data->page, $data->printheading, $data->printintro, $data->initialmaterialid);
+    $result = $DB->update_record('livecourse', $data);
+    $material = $materialid ? $DB->get_record('livecourse_material', [
+        'id' => $materialid, 'livecourseid' => $data->id, 'materialtype' => 'page',
+    ]) : false;
+    if (!$material) {
+        $material = (object) [
+            'livecourseid' => $data->id,
+            'materialtype' => 'page',
+            'url' => '',
+            'visible' => 1,
+            'sortorder' => 1,
+            'timecreated' => time(),
+        ];
+        $material->id = $DB->insert_record('livecourse_material', $material);
+    }
+    $material->title = $data->name;
+    $material->description = $data->intro ?? '';
+    $material->descriptionformat = $data->introformat ?? FORMAT_HTML;
+    $material->content = $content;
+    $material->contentformat = $contentformat;
+    $material->displaytitle = $displaytitle;
+    $material->displaydescription = $displaydescription;
+    if ($draftitemid) {
+        $context = context_module::instance($cmid);
+        $material->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_livecourse',
+            'content', $material->id, livecourse_editor_options($context, $data->course), $material->content);
+    }
+    $DB->update_record('livecourse_material', $material);
+    return $result;
+}
+
+function livecourse_editor_options(context $context, int $courseid): array {
+    global $DB;
+    $course = $DB->get_record('course', ['id' => $courseid], 'maxbytes', MUST_EXIST);
+    return [
+        'maxfiles' => -1,
+        'maxbytes' => $course->maxbytes,
+        'trusttext' => true,
+        'context' => $context,
+        'subdirs' => true,
+    ];
 }
 
 function livecourse_delete_instance(int $id): bool {

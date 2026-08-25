@@ -3,6 +3,7 @@ $string['pluginname'] = 'Ուղիղ դաս';
 $string['modulename'] = 'Ուղիղ դաս';
 $string['modulenameplural'] = 'Ուղիղ դասեր';
 $string['livecoursename'] = 'Ուղիղ դասի անունը';
+$string['lessoncontentheader'] = 'Դասի բովանդակություն';
 $string['livecourse:addinstance'] = 'Ավելացնել ուղիղ դաս';
 $string['livecourse:view'] = 'Միանալ ուղիղ դասին';
 $string['livecourse:manage'] = 'Կառավարել ուղիղ դասը';

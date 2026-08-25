@@ -10,6 +10,9 @@ define([], function() {
         if (!status || !stage || !contentStage) {
             return;
         }
+        document.getElementById('inspiration-liveclassroom')?.classList.toggle(
+            'lc-awaiting-start', config.teacher && !state.active
+        );
         status.classList.remove('livecourse-status-error');
         const lessonList = document.querySelector('.lc-lesson-list');
         (state.materials || []).forEach((material, index) => {

@@ -18,6 +18,10 @@
     box-sizing: border-box;
 }
 
+.lc-app.lc-awaiting-start {
+    display: none;
+}
+
 .lc-sidebar {
     background: var(--lc-panel);
     border-right: 1px solid var(--lc-border);

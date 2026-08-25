@@ -3,6 +3,7 @@ $string['pluginname'] = 'Live course';
 $string['modulename'] = 'Live course';
 $string['modulenameplural'] = 'Live courses';
 $string['livecoursename'] = 'Live course name';
+$string['lessoncontentheader'] = 'Lesson content';
 $string['livecourse:addinstance'] = 'Add a live course activity';
 $string['livecourse:view'] = 'Join a live course';
 $string['livecourse:manage'] = 'Manage a live course';

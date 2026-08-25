@@ -49,8 +49,10 @@ if (!$isteacher) {
     $materialconditions['visible'] = 1;
 }
 $classroommaterials = $DB->get_records('livecourse_material', $materialconditions, 'sortorder, id');
+$initialactive = $DB->record_exists('livecourse_session', ['livecourseid' => $livecourse->id, 'status' => 1]);
 
-echo html_writer::start_div('lc-app', ['id' => 'inspiration-liveclassroom']);
+$appclasses = 'lc-app' . ($isteacher && !$initialactive ? ' lc-awaiting-start' : '');
+echo html_writer::start_div($appclasses, ['id' => 'inspiration-liveclassroom']);
 echo html_writer::start_tag('aside', ['class' => 'lc-sidebar']);
 echo html_writer::start_div('lc-side-top');
 echo html_writer::tag('button', '☰', ['type' => 'button', 'class' => 'lc-icon-btn', 'id' => 'lc-menu-btn',
