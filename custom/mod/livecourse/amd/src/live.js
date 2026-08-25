@@ -208,7 +208,7 @@ define([], function() {
                 try {
                     const body = new FormData(form);
                     body.set('ajax', '1');
-                    const response = await fetch(form.action, {
+                    const response = await fetch(form.getAttribute('action'), {
                         method: 'POST',
                         body,
                         credentials: 'same-origin'
