@@ -31,10 +31,11 @@ if (!empty($livecourse->intro)) {
     echo $OUTPUT->box(format_module_intro('livecourse', $livecourse, $cm->id), 'generalbox mod_introbox');
 }
 
+require(__DIR__ . '/materials_view.php');
+
 if (has_capability('mod/livecourse:manage', $context)) {
     require(__DIR__ . '/teacher_view.php');
 } else {
     require(__DIR__ . '/student_view.php');
 }
 echo $OUTPUT->footer();
-

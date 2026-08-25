@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/livecourse/db" VERSION="2026082500" COMMENT="XMLDB file for Live course">
+<XMLDB PATH="mod/livecourse/db" VERSION="2026082501" COMMENT="XMLDB file for Live course">
   <TABLES>
     <TABLE NAME="livecourse" COMMENT="Live course activity instances">
       <FIELDS>
@@ -8,6 +8,8 @@
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT=""/>
         <FIELD NAME="intro" TYPE="text" NOTNULL="false"/>
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="meetingenabled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="meetingurl" TYPE="char" LENGTH="1333" NOTNULL="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
       </FIELDS>
@@ -15,6 +17,26 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="course" TYPE="foreign" FIELDS="course" REFTABLE="course" REFFIELDS="id"/>
       </KEYS>
+    </TABLE>
+    <TABLE NAME="livecourse_material" COMMENT="Published resources for a live course">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="livecourseid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="materialtype" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="link"/>
+        <FIELD NAME="url" TYPE="char" LENGTH="1333" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="visible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="livecourse" TYPE="foreign" FIELDS="livecourseid" REFTABLE="livecourse" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="livecourse-visible-sort" UNIQUE="false" FIELDS="livecourseid, visible, sortorder"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="livecourse_question" COMMENT="Questions owned by a live course">
       <FIELDS>
@@ -80,4 +102,3 @@
     </TABLE>
   </TABLES>
 </XMLDB>
-

@@ -34,6 +34,45 @@ switch ($action) {
         $DB->insert_record('livecourse_question', $record);
         break;
 
+    case 'addmaterial':
+        $materialtype = required_param('materialtype', PARAM_ALPHA);
+        if (!in_array($materialtype, ['video', 'document', 'link'], true)) {
+            throw new invalid_parameter_exception('Invalid material type');
+        }
+        $materialurl = required_param('materialurl', PARAM_URL);
+        if (!preg_match('#^https://#i', $materialurl)) {
+            throw new invalid_parameter_exception('Material URL must use HTTPS');
+        }
+        $DB->insert_record('livecourse_material', (object) [
+            'livecourseid' => $livecourse->id,
+            'title' => required_param('materialtitle', PARAM_TEXT),
+            'materialtype' => $materialtype,
+            'url' => $materialurl,
+            'description' => optional_param('materialdescription', '', PARAM_TEXT),
+            'visible' => 1,
+            'sortorder' => $DB->count_records('livecourse_material', ['livecourseid' => $livecourse->id]) + 1,
+            'timecreated' => time(),
+        ]);
+        break;
+
+    case 'togglematerial':
+        $materialid = required_param('materialid', PARAM_INT);
+        $material = $DB->get_record('livecourse_material', [
+            'id' => $materialid,
+            'livecourseid' => $livecourse->id,
+        ], '*', MUST_EXIST);
+        $material->visible = $material->visible ? 0 : 1;
+        $DB->update_record('livecourse_material', $material);
+        break;
+
+    case 'deletematerial':
+        $materialid = required_param('materialid', PARAM_INT);
+        $DB->delete_records('livecourse_material', [
+            'id' => $materialid,
+            'livecourseid' => $livecourse->id,
+        ]);
+        break;
+
     case 'startsession':
         if (!$session) {
             $DB->insert_record('livecourse_session', (object) [
@@ -93,4 +132,3 @@ switch ($action) {
 
 $transaction->allow_commit();
 redirect($redirect);
-

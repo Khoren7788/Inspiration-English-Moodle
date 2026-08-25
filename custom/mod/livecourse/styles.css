@@ -45,3 +45,54 @@
     font-weight: 700;
 }
 
+.livecourse-video-panel {
+    background: #0b1220;
+    border-radius: 0.9rem;
+    color: #fff;
+    padding: 1rem;
+}
+
+.livecourse-video-frame {
+    background: #000;
+    border: 0;
+    border-radius: 0.65rem;
+    display: block;
+    height: min(65vh, 620px);
+    width: 100%;
+}
+
+.livecourse-materials {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.livecourse-materials > h3 {
+    grid-column: 1 / -1;
+}
+
+.livecourse-material-card {
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+.livecourse-material-hidden {
+    border-style: dashed;
+    opacity: 0.65;
+}
+
+.livecourse-material-video {
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 0.5rem;
+    display: block;
+    margin-top: 0.75rem;
+    width: 100%;
+}
+
+.livecourse-material-actions {
+    display: flex;
+    gap: 0.5rem;
+}

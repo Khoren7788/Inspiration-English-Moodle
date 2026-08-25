@@ -37,6 +37,34 @@ function livecourse_delete_instance(int $id): bool {
     }
     $DB->delete_records('livecourse_session', ['livecourseid' => $id]);
     $DB->delete_records('livecourse_question', ['livecourseid' => $id]);
+    $DB->delete_records('livecourse_material', ['livecourseid' => $id]);
     $DB->delete_records('livecourse', ['id' => $id]);
     return true;
+}
+
+function livecourse_get_youtube_embed_url(string $url): ?string {
+    $parts = parse_url($url);
+    if (!$parts || empty($parts['host'])) {
+        return null;
+    }
+    $host = strtolower($parts['host']);
+    $videoid = null;
+    if (in_array($host, ['youtube.com', 'www.youtube.com', 'm.youtube.com'], true)) {
+        parse_str($parts['query'] ?? '', $query);
+        $videoid = $query['v'] ?? null;
+        if (!$videoid && str_starts_with($parts['path'] ?? '', '/shorts/')) {
+            $videoid = explode('/', trim($parts['path'], '/'))[1] ?? null;
+        }
+    } else if ($host === 'youtu.be') {
+        $videoid = trim($parts['path'] ?? '', '/');
+    }
+    if (!$videoid || !preg_match('/^[a-zA-Z0-9_-]{6,20}$/', $videoid)) {
+        return null;
+    }
+    return 'https://www.youtube-nocookie.com/embed/' . $videoid;
+}
+
+function livecourse_is_embeddable_jitsi_url(string $url): bool {
+    $parts = parse_url($url);
+    return $parts && ($parts['scheme'] ?? '') === 'https' && strtolower($parts['host'] ?? '') === 'meet.jit.si';
 }
