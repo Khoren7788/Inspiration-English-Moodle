@@ -78,13 +78,17 @@ switch ($action) {
         if ($materialtype !== 'page' && !preg_match('#^https://#i', $materialurl)) {
             throw new invalid_parameter_exception('Material URL must use HTTPS');
         }
+        $materialcontent = $materialtype === 'page' ? optional_param('materialcontent', '', PARAM_CLEANHTML) : null;
+        if ($materialtype === 'page' && trim($materialcontent) === '') {
+            throw new invalid_parameter_exception('Page content is required');
+        }
         $DB->insert_record('livecourse_material', (object) [
             'livecourseid' => $livecourse->id,
             'title' => required_param('materialtitle', PARAM_TEXT),
             'materialtype' => $materialtype,
             'url' => $materialurl,
             'description' => optional_param('materialdescription', '', PARAM_TEXT),
-            'content' => $materialtype === 'page' ? optional_param('materialcontent', '', PARAM_CLEANHTML) : null,
+            'content' => $materialcontent,
             'visible' => 1,
             'sortorder' => $DB->count_records('livecourse_material', ['livecourseid' => $livecourse->id]) + 1,
             'timecreated' => time(),

@@ -18,6 +18,9 @@ define([], function() {
         }
         if (state.material) {
             const material = state.material;
+            document.querySelectorAll('[data-livecourse-material]').forEach(item => {
+                item.classList.toggle('active', Number(item.dataset.livecourseMaterial) === material.id);
+            });
             let materialHtml = `<div class="livecourse-slide-counter">${material.position} / ${material.total}</div>` +
                 `<h2>${escapeHtml(material.title)}</h2>${material.description || ''}`;
             if (material.type === 'page') {
@@ -32,6 +35,7 @@ define([], function() {
             }
             contentStage.innerHTML = materialHtml;
         } else {
+            document.querySelectorAll('[data-livecourse-material]').forEach(item => item.classList.remove('active'));
             contentStage.innerHTML = `<div class="livecourse-empty-slide">${escapeHtml(config.strings.waitingmaterial)}</div>`;
         }
         if (!state.question) {
@@ -173,12 +177,82 @@ define([], function() {
         });
     };
 
+    const bindClassroomShell = () => {
+        const root = document.getElementById('inspiration-liveclassroom');
+        const collapse = document.getElementById('lc-collapse-btn');
+        const menu = document.getElementById('lc-menu-btn');
+        const toggleSidebar = () => {
+            root?.classList.toggle('lc-collapsed');
+            if (collapse && root) {
+                collapse.textContent = root.classList.contains('lc-collapsed') ? '⇥' : '⇤';
+            }
+        };
+        collapse?.addEventListener('click', toggleSidebar);
+        menu?.addEventListener('click', toggleSidebar);
+
+        const copy = document.getElementById('lc-copy-btn');
+        copy?.addEventListener('click', async () => {
+            const value = document.getElementById('lc-classroom-link')?.textContent || window.location.href;
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(value);
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = value;
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    textarea.remove();
+                }
+                const original = copy.textContent;
+                copy.textContent = '✓';
+                window.setTimeout(() => copy.textContent = original, 1200);
+            } catch (error) {
+                // The classroom link remains visible for manual copying.
+            }
+        });
+    };
+
+    const bindAuthoringForms = () => {
+        const questionType = document.getElementById('questiontype');
+        const updateQuestionFields = () => {
+            document.querySelectorAll('[data-question-fields]').forEach(group => {
+                const active = group.dataset.questionFields.split(' ').includes(questionType?.value);
+                group.hidden = !active;
+                group.querySelectorAll('input, textarea, select').forEach(field => field.required = active);
+            });
+        };
+        questionType?.addEventListener('change', updateQuestionFields);
+        updateQuestionFields();
+
+        const materialType = document.getElementById('materialtype');
+        const updateMaterialFields = () => {
+            const page = materialType?.value === 'page';
+            const urlGroup = document.querySelector('[data-material-fields="url"]');
+            const pageGroup = document.querySelector('[data-material-fields="page"]');
+            if (urlGroup) {
+                urlGroup.hidden = page;
+                urlGroup.querySelectorAll('input').forEach(field => field.required = !page);
+            }
+            if (pageGroup) {
+                pageGroup.hidden = !page;
+                pageGroup.querySelectorAll('textarea').forEach(field => field.required = page);
+            }
+        };
+        materialType?.addEventListener('change', updateMaterialFields);
+        updateMaterialFields();
+    };
+
     return {
         init: config => {
+            bindClassroomShell();
             refresh(config);
             connect(config);
             if (config.teacher) {
                 bindTeacherControls(config);
+                bindAuthoringForms();
             }
         }
     };
