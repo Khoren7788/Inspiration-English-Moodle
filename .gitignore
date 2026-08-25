@@ -22,7 +22,7 @@ docker/nginx/ssl/
 *.pfx
 
 # ----------------------------
-# Moodle configuration
+# Moodle root configuration
 # ----------------------------
 /config.php
 
