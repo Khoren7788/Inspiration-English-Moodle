@@ -10,6 +10,7 @@ define([], function() {
         if (!status || !stage || !contentStage) {
             return;
         }
+        status.classList.remove('livecourse-status-error');
         const lessonList = document.querySelector('.lc-lesson-list');
         (state.materials || []).forEach((material, index) => {
             const button = document.querySelector(`[data-livecourse-material="${material.id}"]`);
@@ -205,12 +206,27 @@ define([], function() {
                     button.disabled = true;
                 }
                 try {
-                    await fetch(form.action, {
+                    const body = new FormData(form);
+                    body.set('ajax', '1');
+                    const response = await fetch(form.action, {
                         method: 'POST',
-                        body: new FormData(form),
+                        body,
                         credentials: 'same-origin'
                     });
+                    if (!response.ok) {
+                        throw new Error(`Live action failed (${response.status})`);
+                    }
+                    const result = await response.json();
+                    if (!result.success) {
+                        throw new Error('Live action was not accepted');
+                    }
                     await refresh(config);
+                } catch (error) {
+                    const status = document.getElementById('livecourse-status');
+                    if (status) {
+                        status.textContent = config.strings.actionfailed;
+                        status.classList.add('livecourse-status-error');
+                    }
                 } finally {
                     if (button) {
                         button.disabled = false;

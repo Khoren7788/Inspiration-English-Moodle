@@ -57,6 +57,7 @@ $string['readytitle'] = 'Դասարանը պատրաստ է';
 $string['readydescription'] = 'Սկսեք դասը, ապա ընտրեք դասի էջը կամ հրապարակեք վարժություն։';
 $string['studentwaitingtitle'] = 'Դասը շուտով կսկսվի';
 $string['studentwaitingdescription'] = 'Մնացեք այս էջում․ դասարանը կբացվի ավտոմատ, երբ դասախոսը սկսի դասը։';
+$string['actionfailed'] = 'Live գործողությունը չկատարվեց։ Թարմացրեք էջը և կրկին փորձեք։';
 $string['noactivequestion'] = 'Այս պահին ակտիվ հարց չկա։';
 $string['websocketnotconfigured'] = 'Ուղիղ դասի WebSocket-ը կարգավորված չէ։';
 $string['coursematerials'] = 'Դասի նյութեր';

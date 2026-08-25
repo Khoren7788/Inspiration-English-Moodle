@@ -35,6 +35,7 @@ $PAGE->requires->js_call_amd('mod_livecourse/live', 'init', [[
         'readydescription' => get_string('readydescription', 'mod_livecourse'),
         'studentwaitingtitle' => get_string('studentwaitingtitle', 'mod_livecourse'),
         'studentwaitingdescription' => get_string('studentwaitingdescription', 'mod_livecourse'),
+        'actionfailed' => get_string('actionfailed', 'mod_livecourse'),
     ],
 ]]);
 

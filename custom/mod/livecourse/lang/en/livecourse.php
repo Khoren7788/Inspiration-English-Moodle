@@ -57,6 +57,7 @@ $string['readytitle'] = 'Your classroom is ready';
 $string['readydescription'] = 'Start the session, then choose a lesson page or publish an exercise.';
 $string['studentwaitingtitle'] = 'The lesson will begin soon';
 $string['studentwaitingdescription'] = 'Stay on this page. The classroom will open automatically when the teacher starts the lesson.';
+$string['actionfailed'] = 'The live action could not be completed. Refresh the page and try again.';
 $string['noactivequestion'] = 'There is no active question.';
 $string['websocketnotconfigured'] = 'Live course WebSocket is not configured.';
 $string['coursematerials'] = 'Lesson materials';

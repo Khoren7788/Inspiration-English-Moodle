@@ -1,4 +1,7 @@
 <?php
+if (!empty($_REQUEST['ajax'])) {
+    define('AJAX_SCRIPT', true);
+}
 require_once(__DIR__ . '/../../../config.php');
 
 $id = required_param('id', PARAM_INT);
@@ -13,7 +16,25 @@ require_sesskey();
 
 $redirect = new moodle_url('/mod/livecourse/view.php', ['id' => $cm->id]);
 $transaction = $DB->start_delegated_transaction();
-$session = $DB->get_record('livecourse_session', ['livecourseid' => $livecourse->id, 'status' => 1]);
+$activesessions = $DB->get_records('livecourse_session', [
+    'livecourseid' => $livecourse->id,
+    'status' => 1,
+], 'timemodified DESC, id DESC');
+$session = $activesessions ? reset($activesessions) : false;
+// Recover safely if two browser tabs started the same classroom concurrently.
+$keptsession = false;
+foreach ($activesessions as $activesession) {
+    if (!$keptsession) {
+        $keptsession = true;
+        continue;
+    }
+    $activesession->status = 0;
+    $activesession->currentquestionid = null;
+    $activesession->currentmaterialid = null;
+    $activesession->timeended = time();
+    $activesession->timemodified = time();
+    $DB->update_record('livecourse_session', $activesession);
+}
 $readmaterial = static function() use ($livecourse): stdClass {
     $materialtype = required_param('materialtype', PARAM_ALPHA);
     if (!in_array($materialtype, ['video', 'document', 'link', 'page'], true)) {
@@ -288,4 +309,9 @@ switch ($action) {
 
 $transaction->allow_commit();
 livecourse_publish_event($cm->id);
+if (optional_param('ajax', 0, PARAM_BOOL)) {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['success' => true, 'action' => $action], JSON_THROW_ON_ERROR);
+    exit;
+}
 redirect($redirect);

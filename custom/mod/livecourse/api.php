@@ -12,7 +12,11 @@ $context = context_module::instance($cm->id);
 require_capability('mod/livecourse:view', $context);
 
 header('Content-Type: application/json; charset=utf-8');
-$session = $DB->get_record('livecourse_session', ['livecourseid' => $livecourse->id, 'status' => 1]);
+$sessions = $DB->get_records('livecourse_session', [
+    'livecourseid' => $livecourse->id,
+    'status' => 1,
+], 'timemodified DESC, id DESC', '*', 0, 1);
+$session = $sessions ? reset($sessions) : false;
 
 if ($action === 'respond') {
     require_sesskey();
