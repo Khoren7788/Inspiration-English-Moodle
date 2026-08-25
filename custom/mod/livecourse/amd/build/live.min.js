@@ -10,6 +10,22 @@ define([], function() {
         if (!status || !stage || !contentStage) {
             return;
         }
+        const lessonList = document.querySelector('.lc-lesson-list');
+        (state.materials || []).forEach((material, index) => {
+            const button = document.querySelector(`[data-livecourse-material="${material.id}"]`);
+            const item = button?.closest('.lc-lesson-form') || button;
+            if (item && lessonList) {
+                lessonList.appendChild(item);
+                const number = button.querySelector('.lc-num');
+                const title = button.querySelector('.lc-item-title');
+                if (number) {
+                    number.textContent = index + 1;
+                }
+                if (title) {
+                    title.textContent = material.title;
+                }
+            }
+        });
         if (!state.active) {
             status.textContent = config.strings.closed;
             stage.innerHTML = '';
@@ -245,6 +261,86 @@ define([], function() {
         updateMaterialFields();
     };
 
+    const bindLessonBuilder = config => {
+        document.querySelectorAll('[data-material-editor]').forEach(form => {
+            const type = form.querySelector('[data-edit-material-type]');
+            const update = () => {
+                const page = type?.value === 'page';
+                const urlGroup = form.querySelector('[data-edit-material-url]');
+                const pageGroup = form.querySelector('[data-edit-material-page]');
+                if (urlGroup) {
+                    urlGroup.hidden = page;
+                    urlGroup.querySelectorAll('input').forEach(field => field.required = !page);
+                }
+                if (pageGroup) {
+                    pageGroup.hidden = !page;
+                    pageGroup.querySelectorAll('textarea').forEach(field => field.required = page);
+                }
+            };
+            type?.addEventListener('change', update);
+            update();
+        });
+
+        document.querySelectorAll('[data-confirm-delete]').forEach(button => {
+            button.closest('form')?.addEventListener('submit', event => {
+                if (!window.confirm(button.dataset.confirmDelete)) {
+                    event.preventDefault();
+                }
+            });
+        });
+
+        const container = document.querySelector('[data-material-sortable="1"]');
+        if (!container) {
+            return;
+        }
+        let dragged = null;
+        let initialOrder = '';
+        const order = () => Array.from(container.querySelectorAll('[data-material-card]'))
+            .map(card => card.dataset.materialId).join(',');
+        container.querySelectorAll('[data-material-card]').forEach(card => {
+            card.addEventListener('dragstart', event => {
+                if (event.target.closest('button, a, input, textarea, select, details')) {
+                    event.preventDefault();
+                    return;
+                }
+                dragged = card;
+                initialOrder = order();
+                card.classList.add('livecourse-dragging');
+                event.dataTransfer.effectAllowed = 'move';
+            });
+            card.addEventListener('dragover', event => {
+                if (!dragged || dragged === card) {
+                    return;
+                }
+                event.preventDefault();
+                container.querySelectorAll('[data-material-card]').forEach(item =>
+                    item.classList.remove('livecourse-drag-target'));
+                card.classList.add('livecourse-drag-target');
+                const after = event.clientY > card.getBoundingClientRect().top + card.offsetHeight / 2;
+                container.insertBefore(dragged, after ? card.nextSibling : card);
+            });
+            card.addEventListener('dragend', async () => {
+                container.querySelectorAll('[data-material-card]').forEach(item =>
+                    item.classList.remove('livecourse-dragging', 'livecourse-drag-target'));
+                const nextOrder = order();
+                dragged = null;
+                if (nextOrder === initialOrder) {
+                    return;
+                }
+                const body = new URLSearchParams({
+                    id: container.dataset.cmid,
+                    action: 'reordermaterials',
+                    order: nextOrder,
+                    sesskey: container.dataset.sesskey
+                });
+                await fetch(container.dataset.manageUrl, {
+                    method: 'POST', body, credentials: 'same-origin'
+                });
+                await refresh(config);
+            });
+        });
+    };
+
     return {
         init: config => {
             bindClassroomShell();
@@ -253,6 +349,7 @@ define([], function() {
             if (config.teacher) {
                 bindTeacherControls(config);
                 bindAuthoringForms();
+                bindLessonBuilder(config);
             }
         }
     };

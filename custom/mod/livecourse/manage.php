@@ -14,6 +14,32 @@ require_sesskey();
 $redirect = new moodle_url('/mod/livecourse/view.php', ['id' => $cm->id]);
 $transaction = $DB->start_delegated_transaction();
 $session = $DB->get_record('livecourse_session', ['livecourseid' => $livecourse->id, 'status' => 1]);
+$readmaterial = static function() use ($livecourse): stdClass {
+    $materialtype = required_param('materialtype', PARAM_ALPHA);
+    if (!in_array($materialtype, ['video', 'document', 'link', 'page'], true)) {
+        throw new invalid_parameter_exception('Invalid material type');
+    }
+    $materialurl = optional_param('materialurl', '', PARAM_URL);
+    if ($materialtype !== 'page' && !preg_match('#^https://#i', $materialurl)) {
+        throw new invalid_parameter_exception('Material URL must use HTTPS');
+    }
+    $materialcontent = $materialtype === 'page' ? optional_param('materialcontent', '', PARAM_CLEANHTML) : null;
+    if ($materialtype === 'page' && trim($materialcontent) === '') {
+        throw new invalid_parameter_exception('Page content is required');
+    }
+    $title = trim(required_param('materialtitle', PARAM_TEXT));
+    if ($title === '') {
+        throw new invalid_parameter_exception('Material title is required');
+    }
+    return (object) [
+        'livecourseid' => $livecourse->id,
+        'title' => $title,
+        'materialtype' => $materialtype,
+        'url' => $materialurl,
+        'description' => optional_param('materialdescription', '', PARAM_TEXT),
+        'content' => $materialcontent,
+    ];
+};
 
 switch ($action) {
     case 'addquestion':
@@ -70,29 +96,42 @@ switch ($action) {
         break;
 
     case 'addmaterial':
-        $materialtype = required_param('materialtype', PARAM_ALPHA);
-        if (!in_array($materialtype, ['video', 'document', 'link', 'page'], true)) {
-            throw new invalid_parameter_exception('Invalid material type');
-        }
-        $materialurl = optional_param('materialurl', '', PARAM_URL);
-        if ($materialtype !== 'page' && !preg_match('#^https://#i', $materialurl)) {
-            throw new invalid_parameter_exception('Material URL must use HTTPS');
-        }
-        $materialcontent = $materialtype === 'page' ? optional_param('materialcontent', '', PARAM_CLEANHTML) : null;
-        if ($materialtype === 'page' && trim($materialcontent) === '') {
-            throw new invalid_parameter_exception('Page content is required');
-        }
-        $DB->insert_record('livecourse_material', (object) [
+        $material = $readmaterial();
+        $material->visible = 1;
+        $material->sortorder = $DB->count_records('livecourse_material', ['livecourseid' => $livecourse->id]) + 1;
+        $material->timecreated = time();
+        $DB->insert_record('livecourse_material', $material);
+        break;
+
+    case 'editmaterial':
+        $materialid = required_param('materialid', PARAM_INT);
+        $DB->get_record('livecourse_material', [
+            'id' => $materialid,
             'livecourseid' => $livecourse->id,
-            'title' => required_param('materialtitle', PARAM_TEXT),
-            'materialtype' => $materialtype,
-            'url' => $materialurl,
-            'description' => optional_param('materialdescription', '', PARAM_TEXT),
-            'content' => $materialcontent,
-            'visible' => 1,
-            'sortorder' => $DB->count_records('livecourse_material', ['livecourseid' => $livecourse->id]) + 1,
-            'timecreated' => time(),
-        ]);
+        ], 'id', MUST_EXIST);
+        $material = $readmaterial();
+        $material->id = $materialid;
+        $DB->update_record('livecourse_material', $material);
+        break;
+
+    case 'reordermaterials':
+        $order = array_map('intval', explode(',', required_param('order', PARAM_SEQUENCE)));
+        $existingids = array_map('intval', array_keys($DB->get_records(
+            'livecourse_material', ['livecourseid' => $livecourse->id], '', 'id'
+        )));
+        $sortedorder = $order;
+        $sortedexisting = $existingids;
+        sort($sortedorder);
+        sort($sortedexisting);
+        if ($sortedorder !== $sortedexisting) {
+            throw new invalid_parameter_exception('Invalid material order');
+        }
+        foreach ($order as $position => $materialid) {
+            $DB->set_field('livecourse_material', 'sortorder', $position + 1, [
+                'id' => $materialid,
+                'livecourseid' => $livecourse->id,
+            ]);
+        }
         break;
 
     case 'togglematerial':

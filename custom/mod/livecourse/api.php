@@ -57,7 +57,19 @@ if ($action === 'respond') {
     }
 }
 
-$payload = ['active' => (bool) $session, 'question' => null, 'material' => null];
+$listconditions = ['livecourseid' => $livecourse->id];
+if (!has_capability('mod/livecourse:manage', $context)) {
+    $listconditions['visible'] = 1;
+}
+$payload = [
+    'active' => (bool) $session,
+    'question' => null,
+    'material' => null,
+    'materials' => array_values(array_map(static fn($item): array => [
+        'id' => (int) $item->id,
+        'title' => format_string($item->title),
+    ], $DB->get_records('livecourse_material', $listconditions, 'sortorder, id', 'id,title'))),
+];
 if ($session && $session->currentmaterialid) {
     $material = $DB->get_record('livecourse_material', [
         'id' => $session->currentmaterialid,
