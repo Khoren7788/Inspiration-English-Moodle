@@ -285,6 +285,41 @@
     text-align: center;
 }
 
+.livecourse-session-empty {
+    align-items: center;
+    background: linear-gradient(145deg, #f7faff, #eef4ff);
+    border: 1px solid #dce7f7;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 260px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.livecourse-session-empty h2 {
+    margin: 0.75rem 0 0.4rem;
+}
+
+.livecourse-session-empty p {
+    color: #66758a;
+    margin-bottom: 1.25rem;
+    max-width: 520px;
+}
+
+.livecourse-session-icon {
+    align-items: center;
+    background: #246ee9;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    font-size: 1.25rem;
+    height: 3.5rem;
+    justify-content: center;
+    width: 3.5rem;
+}
+
 .livecourse-panel,
 .livecourse-stage,
 .livecourse-question-row {

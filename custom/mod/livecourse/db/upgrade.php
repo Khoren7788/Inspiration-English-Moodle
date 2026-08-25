@@ -102,5 +102,8 @@ function xmldb_livecourse_upgrade(int $oldversion): bool {
         }
         upgrade_mod_savepoint(true, 2026082507, 'livecourse');
     }
+    if ($oldversion < 2026082508) {
+        upgrade_mod_savepoint(true, 2026082508, 'livecourse');
+    }
     return true;
 }

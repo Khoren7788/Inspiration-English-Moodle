@@ -30,6 +30,11 @@ $PAGE->requires->js_call_amd('mod_livecourse/live', 'init', [[
         'correct' => get_string('correctresponses', 'mod_livecourse'),
         'waitingmaterial' => get_string('waitingformaterial', 'mod_livecourse'),
         'openmaterial' => get_string('openmaterial', 'mod_livecourse'),
+        'startlesson' => get_string('startlesson', 'mod_livecourse'),
+        'readytitle' => get_string('readytitle', 'mod_livecourse'),
+        'readydescription' => get_string('readydescription', 'mod_livecourse'),
+        'studentwaitingtitle' => get_string('studentwaitingtitle', 'mod_livecourse'),
+        'studentwaitingdescription' => get_string('studentwaitingdescription', 'mod_livecourse'),
     ],
 ]]);
 

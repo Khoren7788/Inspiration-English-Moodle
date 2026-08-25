@@ -29,7 +29,33 @@ define([], function() {
         if (!state.active) {
             status.textContent = config.strings.closed;
             stage.innerHTML = '';
-            contentStage.innerHTML = '';
+            contentStage.innerHTML = config.teacher
+                ? `<div class="livecourse-session-empty"><div class="livecourse-session-icon">▶</div>` +
+                    `<h2>${escapeHtml(config.strings.readytitle)}</h2>` +
+                    `<p>${escapeHtml(config.strings.readydescription)}</p>` +
+                    `<button class="btn btn-primary btn-lg" data-start-live-session>` +
+                    `${escapeHtml(config.strings.startlesson)}</button></div>`
+                : `<div class="livecourse-session-empty"><div class="livecourse-session-icon">◷</div>` +
+                    `<h2>${escapeHtml(config.strings.studentwaitingtitle)}</h2>` +
+                    `<p>${escapeHtml(config.strings.studentwaitingdescription)}</p></div>`;
+            contentStage.querySelector('[data-start-live-session]')?.addEventListener('click', async event => {
+                const button = event.currentTarget;
+                button.disabled = true;
+                const body = new URLSearchParams({
+                    id: config.cmid, action: 'startsession', sesskey: config.sesskey
+                });
+                try {
+                    const response = await fetch(`${M.cfg.wwwroot}/mod/livecourse/manage.php`, {
+                        method: 'POST', body, credentials: 'same-origin'
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Unable to start live session (${response.status})`);
+                    }
+                    await refresh(config);
+                } finally {
+                    button.disabled = false;
+                }
+            });
             return;
         }
         if (state.material) {
