@@ -310,8 +310,7 @@ switch ($action) {
 $transaction->allow_commit();
 livecourse_publish_event($cm->id);
 if (optional_param('ajax', 0, PARAM_BOOL)) {
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['success' => true, 'action' => $action], JSON_THROW_ON_ERROR);
+    http_response_code(204);
     exit;
 }
 redirect($redirect);

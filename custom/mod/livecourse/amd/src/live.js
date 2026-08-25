@@ -216,12 +216,9 @@ define([], function() {
                     if (!response.ok) {
                         throw new Error(`Live action failed (${response.status})`);
                     }
-                    const result = await response.json();
-                    if (!result.success) {
-                        throw new Error('Live action was not accepted');
-                    }
                     await refresh(config);
                 } catch (error) {
+                    window.console.error('Live Classroom action failed', error);
                     const status = document.getElementById('livecourse-status');
                     if (status) {
                         status.textContent = config.strings.actionfailed;
