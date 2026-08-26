@@ -19,21 +19,21 @@ class mod_livecourse_mod_form extends moodleform_mod {
     public function definition(): void {
         $mform = $this->_form;
         $mform->addElement('header', 'general', get_string('general', 'form'));
-        $mform->addElement('text', 'name', get_string('livecoursename', 'mod_livecourse'), ['size' => 64]);
+        $mform->addElement('text', 'name', get_string('name'), ['size' => 48, 'maxlength' => 255]);
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
         $this->standard_intro_elements();
 
-        $mform->addElement('header', 'contentsection', get_string('lessoncontentheader', 'mod_livecourse'));
-        $mform->addElement('editor', 'page', get_string('materialcontent', 'mod_livecourse'), null,
+        $mform->addElement('header', 'contentsection', get_string('contentheader', 'page'));
+        $mform->addElement('editor', 'page', get_string('content', 'page'), null,
             $this->editor_options());
         $mform->addRule('page', get_string('required'), 'required', null, 'client');
 
         $mform->addElement('header', 'appearancehdr', get_string('appearance'));
-        $mform->addElement('advcheckbox', 'printheading', get_string('displaypagetitle', 'mod_livecourse'));
-        $mform->setDefault('printheading', 1);
-        $mform->addElement('advcheckbox', 'printintro', get_string('displaypagedescription', 'mod_livecourse'));
+        $mform->addElement('advcheckbox', 'printintro', get_string('printintro', 'page'));
         $mform->setDefault('printintro', 1);
+        $mform->addElement('advcheckbox', 'printlastmodified', get_string('printlastmodified', 'page'));
+        $mform->setDefault('printlastmodified', 1);
         $mform->addElement('hidden', 'initialmaterialid', 0);
         $mform->setType('initialmaterialid', PARAM_INT);
 
@@ -62,7 +62,7 @@ class mod_livecourse_mod_form extends moodleform_mod {
             'itemid' => $draftitemid,
         ];
         $defaultvalues['initialmaterialid'] = $material->id;
-        $defaultvalues['printheading'] = $material->displaytitle;
         $defaultvalues['printintro'] = $material->displaydescription;
+        $defaultvalues['printlastmodified'] = $material->displaylastmodified ?? 1;
     }
 }

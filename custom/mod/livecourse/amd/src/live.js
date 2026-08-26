@@ -13,6 +13,11 @@ define([], function() {
         document.getElementById('inspiration-liveclassroom')?.classList.toggle(
             'lc-awaiting-start', config.teacher && !state.active
         );
+        const sessionState = document.getElementById('lc-session-state');
+        if (sessionState) {
+            sessionState.textContent = state.active ? config.strings.sessionactive : config.strings.sessioninactive;
+            sessionState.classList.toggle('is-active', state.active);
+        }
         status.classList.remove('livecourse-status-error');
         const lessonList = document.querySelector('.lc-lesson-list');
         (state.materials || []).forEach((material, index) => {
@@ -80,13 +85,16 @@ define([], function() {
                 materialHtml += `<a class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer" ` +
                     `href="${escapeHtml(material.url)}">${escapeHtml(config.strings.openmaterial)}</a>`;
             }
+            if (material.lastmodified) {
+                materialHtml += `<div class="livecourse-last-modified">${escapeHtml(material.lastmodified)}</div>`;
+            }
             contentStage.innerHTML = materialHtml;
         } else {
             document.querySelectorAll('[data-livecourse-material]').forEach(item => item.classList.remove('active'));
             contentStage.innerHTML = `<div class="livecourse-empty-slide">${escapeHtml(config.strings.waitingmaterial)}</div>`;
         }
         if (!state.question) {
-            status.textContent = config.strings.waiting;
+            status.textContent = state.material ? '' : config.strings.waitingmaterial;
             stage.innerHTML = '';
             return;
         }

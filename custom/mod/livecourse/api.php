@@ -97,6 +97,8 @@ if ($session && $session->currentmaterialid) {
             'description' => !empty($material->displaydescription)
                 ? format_text($description, $material->descriptionformat ?? FORMAT_HTML, ['context' => $context]) : '',
             'displaytitle' => !empty($material->displaytitle),
+            'lastmodified' => !empty($material->displaylastmodified)
+                ? get_string('lastmodified') . ': ' . userdate($material->timemodified ?: $material->timecreated) : '',
             'content' => $material->materialtype === 'page'
                 ? format_text($content, $material->contentformat ?? FORMAT_HTML, ['context' => $context])
                 : '',

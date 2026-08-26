@@ -22,6 +22,79 @@
     display: none;
 }
 
+.lc-app.lc-single-page {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 620px;
+}
+
+.lc-app.lc-single-page .lc-sidebar {
+    display: none;
+}
+
+.lc-teaching-console {
+    background: #fff;
+    border: 1px solid #dfe6ef;
+    border-radius: 1rem;
+    box-shadow: 0 12px 34px rgba(28, 48, 73, 0.08);
+    margin-bottom: 1rem;
+    padding: 1rem 1.15rem;
+}
+
+.lc-teaching-console-heading {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+}
+
+.lc-teaching-console-heading h2 {
+    color: #172941;
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.lc-teaching-console-heading p {
+    color: #718096;
+    font-size: 0.78rem;
+    margin: 0.2rem 0 0;
+}
+
+.lc-session-state {
+    background: #f2f4f7;
+    border-radius: 999px;
+    color: #667085;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.4rem 0.7rem;
+}
+
+.lc-session-state.is-active {
+    background: #e8f8ee;
+    color: #16733c;
+}
+
+.lc-teaching-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.lc-teaching-actions form {
+    margin: 0;
+}
+
+.lc-teaching-actions .btn {
+    align-items: center;
+    border-radius: 0.65rem;
+    display: inline-flex;
+    font-size: 0.82rem;
+    font-weight: 700;
+    gap: 0.4rem;
+    min-height: 40px;
+}
+
 .lc-sidebar {
     background: var(--lc-panel);
     border-right: 1px solid var(--lc-border);
@@ -437,6 +510,10 @@
     margin-bottom: 1.5rem;
 }
 
+.livecourse-player.lc-page-player {
+    grid-template-columns: minmax(0, 1fr);
+}
+
 .livecourse-content-stage,
 .livecourse-stage {
     min-height: 220px;
@@ -691,6 +768,14 @@
     width: 100%;
 }
 
+.livecourse-last-modified {
+    border-top: 1px solid #e5eaf1;
+    color: #7a8798;
+    font-size: 0.75rem;
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+}
+
 .livecourse-results {
     background: var(--bs-light-bg-subtle, #f8f9fa);
     border-radius: 0.5rem;
@@ -741,5 +826,19 @@
 
     .lc-control-actions form {
         flex: 1 1 calc(50% - 0.6rem);
+    }
+
+    .lc-teaching-console-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .lc-teaching-actions form {
+        flex: 1 1 calc(50% - 0.55rem);
+    }
+
+    .lc-teaching-actions .btn {
+        justify-content: center;
+        width: 100%;
     }
 }

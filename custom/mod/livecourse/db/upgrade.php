@@ -120,5 +120,19 @@ function xmldb_livecourse_upgrade(int $oldversion): bool {
     if ($oldversion < 2026082513) {
         upgrade_mod_savepoint(true, 2026082513, 'livecourse');
     }
+    if ($oldversion < 2026082514) {
+        $table = new xmldb_table('livecourse_material');
+        $field = new xmldb_field('displaylastmodified', XMLDB_TYPE_INTEGER, '1', null,
+            XMLDB_NOTNULL, null, '1', 'displaydescription');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null,
+            XMLDB_NOTNULL, null, '0', 'timecreated');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2026082514, 'livecourse');
+    }
     return true;
 }

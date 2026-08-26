@@ -10,6 +10,8 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/livecourse:view', $context);
 $isteacher = has_capability('mod/livecourse:manage', $context);
+$completion = new completion_info($course);
+$completion->set_module_viewed($cm);
 
 $PAGE->set_url('/mod/livecourse/view.php', ['id' => $cm->id]);
 $PAGE->set_title(format_string($livecourse->name));
@@ -36,22 +38,23 @@ $PAGE->requires->js_call_amd('mod_livecourse/live', 'init', [[
         'studentwaitingtitle' => get_string('studentwaitingtitle', 'mod_livecourse'),
         'studentwaitingdescription' => get_string('studentwaitingdescription', 'mod_livecourse'),
         'actionfailed' => get_string('actionfailed', 'mod_livecourse'),
+        'sessionactive' => get_string('sessionactive', 'mod_livecourse'),
+        'sessioninactive' => get_string('sessioninactive', 'mod_livecourse'),
     ],
 ]]);
 
 echo $OUTPUT->header();
-if (!empty($livecourse->intro)) {
-    echo $OUTPUT->box(format_module_intro('livecourse', $livecourse, $cm->id), 'generalbox mod_introbox');
-}
-
 $materialconditions = ['livecourseid' => $livecourse->id];
 if (!$isteacher) {
     $materialconditions['visible'] = 1;
 }
 $classroommaterials = $DB->get_records('livecourse_material', $materialconditions, 'sortorder, id');
 $initialactive = $DB->record_exists('livecourse_session', ['livecourseid' => $livecourse->id, 'status' => 1]);
+if ($isteacher) {
+    require(__DIR__ . '/controls_view.php');
+}
 
-$appclasses = 'lc-app' . ($isteacher && !$initialactive ? ' lc-awaiting-start' : '');
+$appclasses = 'lc-app lc-single-page' . ($isteacher && !$initialactive ? ' lc-awaiting-start' : '');
 echo html_writer::start_div($appclasses, ['id' => 'inspiration-liveclassroom']);
 echo html_writer::start_tag('aside', ['class' => 'lc-sidebar']);
 echo html_writer::start_div('lc-side-top');
@@ -123,26 +126,15 @@ if ($isteacher) {
 }
 echo html_writer::start_tag('section', ['class' => 'lc-content']);
 echo html_writer::div('', 'livecourse-status lc-live-status', ['id' => 'livecourse-status']);
-echo html_writer::start_div('livecourse-player');
+echo html_writer::start_div('livecourse-player lc-page-player');
 echo html_writer::div('', 'livecourse-content-stage', ['id' => 'livecourse-content-stage']);
-echo html_writer::div('', 'livecourse-stage', ['id' => 'livecourse-stage']);
+echo html_writer::div('', 'livecourse-stage', ['id' => 'livecourse-stage', 'hidden' => true]);
 echo html_writer::end_div();
 echo html_writer::end_tag('section');
 echo html_writer::end_tag('main');
 echo html_writer::end_div();
 
-if ($isteacher) {
-    echo html_writer::start_tag('details', ['class' => 'lc-authoring', 'open' => 'open']);
-    echo html_writer::start_tag('summary');
-    echo html_writer::span(get_string('authoringtools', 'mod_livecourse'), 'lc-authoring-title');
-    echo html_writer::span(get_string('authoringsubtitle', 'mod_livecourse'), 'lc-authoring-subtitle');
-    echo html_writer::end_tag('summary');
-    echo html_writer::start_div('lc-authoring-body');
-    require(__DIR__ . '/teacher_view.php');
-    require(__DIR__ . '/materials_view.php');
-    echo html_writer::end_div();
-    echo html_writer::end_tag('details');
-} else {
+if (!$isteacher) {
     require(__DIR__ . '/student_view.php');
 }
 echo $OUTPUT->footer();

@@ -249,11 +249,16 @@ switch ($action) {
 
     case 'startsession':
         if (!$session) {
+            $firstmaterials = $DB->get_records('livecourse_material', [
+                'livecourseid' => $livecourse->id,
+                'visible' => 1,
+            ], 'sortorder, id', 'id', 0, 1);
+            $firstmaterial = $firstmaterials ? reset($firstmaterials) : false;
             $DB->insert_record('livecourse_session', (object) [
                 'livecourseid' => $livecourse->id,
                 'status' => 1,
                 'currentquestionid' => null,
-                'currentmaterialid' => null,
+                'currentmaterialid' => $firstmaterial ? $firstmaterial->id : null,
                 'startedby' => $USER->id,
                 'timestarted' => time(),
                 'timeended' => 0,

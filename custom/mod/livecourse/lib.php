@@ -5,13 +5,20 @@ function livecourse_supports(string $feature): ?bool {
     return match ($feature) {
         FEATURE_MOD_ARCHETYPE => MOD_ARCHETYPE_RESOURCE,
         FEATURE_MOD_INTRO => true,
+        FEATURE_COMPLETION_TRACKS_VIEWS => true,
         FEATURE_SHOW_DESCRIPTION => true,
         FEATURE_MOD_PURPOSE => MOD_PURPOSE_CONTENT,
         FEATURE_GRADE_HAS_GRADE => false,
+        FEATURE_GRADE_OUTCOMES => false,
         FEATURE_GROUPS => false,
+        FEATURE_GROUPINGS => false,
         FEATURE_BACKUP_MOODLE2 => false,
         default => null,
     };
+}
+
+function livecourse_get_file_areas($course, $cm, $context): array {
+    return ['content' => get_string('content', 'page')];
 }
 
 function livecourse_add_instance(stdClass $data, mod_livecourse_mod_form $mform = null): int {
@@ -20,11 +27,11 @@ function livecourse_add_instance(stdClass $data, mod_livecourse_mod_form $mform 
     $content = $mform ? $data->page['text'] : '';
     $contentformat = $mform ? $data->page['format'] : FORMAT_HTML;
     $draftitemid = $mform ? $data->page['itemid'] : 0;
-    $displaytitle = !empty($data->printheading);
     $displaydescription = !empty($data->printintro);
+    $displaylastmodified = !empty($data->printlastmodified);
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
-    unset($data->page, $data->printheading, $data->printintro, $data->initialmaterialid);
+    unset($data->page, $data->printintro, $data->printlastmodified, $data->initialmaterialid);
     $data->id = $DB->insert_record('livecourse', $data);
     $DB->set_field('course_modules', 'instance', $data->id, ['id' => $cmid]);
     $material = (object) [
@@ -36,11 +43,13 @@ function livecourse_add_instance(stdClass $data, mod_livecourse_mod_form $mform 
         'descriptionformat' => $data->introformat ?? FORMAT_HTML,
         'content' => $content,
         'contentformat' => $contentformat,
-        'displaytitle' => $displaytitle,
+        'displaytitle' => 1,
         'displaydescription' => $displaydescription,
+        'displaylastmodified' => $displaylastmodified,
         'visible' => 1,
         'sortorder' => 1,
         'timecreated' => time(),
+        'timemodified' => time(),
     ];
     $material->id = $DB->insert_record('livecourse_material', $material);
     if ($draftitemid) {
@@ -59,11 +68,11 @@ function livecourse_update_instance(stdClass $data, mod_livecourse_mod_form $mfo
     $content = $mform ? $data->page['text'] : '';
     $contentformat = $mform ? $data->page['format'] : FORMAT_HTML;
     $draftitemid = $mform ? $data->page['itemid'] : 0;
-    $displaytitle = !empty($data->printheading);
     $displaydescription = !empty($data->printintro);
+    $displaylastmodified = !empty($data->printlastmodified);
     $data->id = $data->instance;
     $data->timemodified = time();
-    unset($data->page, $data->printheading, $data->printintro, $data->initialmaterialid);
+    unset($data->page, $data->printintro, $data->printlastmodified, $data->initialmaterialid);
     $result = $DB->update_record('livecourse', $data);
     $material = $materialid ? $DB->get_record('livecourse_material', [
         'id' => $materialid, 'livecourseid' => $data->id, 'materialtype' => 'page',
@@ -76,6 +85,7 @@ function livecourse_update_instance(stdClass $data, mod_livecourse_mod_form $mfo
             'visible' => 1,
             'sortorder' => 1,
             'timecreated' => time(),
+            'timemodified' => time(),
         ];
         $material->id = $DB->insert_record('livecourse_material', $material);
     }
@@ -84,8 +94,10 @@ function livecourse_update_instance(stdClass $data, mod_livecourse_mod_form $mfo
     $material->descriptionformat = $data->introformat ?? FORMAT_HTML;
     $material->content = $content;
     $material->contentformat = $contentformat;
-    $material->displaytitle = $displaytitle;
+    $material->displaytitle = 1;
     $material->displaydescription = $displaydescription;
+    $material->displaylastmodified = $displaylastmodified;
+    $material->timemodified = time();
     if ($draftitemid) {
         $context = context_module::instance($cmid);
         $material->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_livecourse',
